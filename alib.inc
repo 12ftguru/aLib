@@ -3,7 +3,7 @@
  * Alib Master File -- just include_once and forget.
  * This file inits several variables. So better check
  * them. (They're documented below). It also defines the anObject
- * object, the one from which all other alib objects should be
+ * object, the one from which all other alib objects should be.
  * defined.
  * @package aLib
  * @author BrYan P. Johnson

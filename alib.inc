@@ -17,15 +17,21 @@ function alibInit()
   {
     addIncludePath('.');
     global $debug, $debugLevel, $debugStyle;
-    if ($debugStyle == 'firebug') {
-      include_once ('debug.fb.inc');
-    } else {
-      include_once ('debug.inc');
-    }
-    $debug = Debug::singleton();
-    $debug->setEnabled(TRUE);
-    $debug->level = ($debugLevel) ? $debugLevel : 0;
     include_once ('configHandler.inc');
+    if ($config->oldDebug || isset($debugLevel)) {
+      if ($debugStyle == 'firebug') {
+	include_once ('debug.fb.inc');
+	$debug = Debug::singleton();
+	$debug->setEnabled(TRUE);
+      } else {
+	include_once ('debug.old.inc');
+	$debug = Debug::singleton();
+      }
+      $debug->level = ($debugLevel) ? $debugLevel : 0;
+    } else {
+      include_once('debug.inc');
+      Debug::init();
+    }
   }
 /**
  * Add a path to the include path, independent of system
@@ -501,6 +507,35 @@ abstract class smartObjectFactory extends anObject {
 
   
 }
+
+/* Some constants! */
+
+/* Now determine if we're CLI or Web */
+if (isset($_SERVER['argc'])) {
+    define('CLI', true);
+} else {
+    define('CLI', false);
+}
+
+/* Our debug levels: */
+define("DEBUG_LOG", 1);
+define("DEBUG_WARN", 2);
+define("DEBUG_INFO", 4);
+define("DEBUG_ERROR", 8);
+define("DEBUG_EXCEPTION", 16);
+define("DEBUG_VARIABLE", 32);
+/* Space for user defined debugging low levels*/
+
+define("DEBUG_TRACE", 1024);
+define("DEBUG_MEMORY", 2048);
+define("DEBUG_QUERY", 4096);
+/* Space for user defined high debugging levels */
+
+
+define("DEBUG_ALL", 32767);
+define("DEBUG_LOW", 1023);
+define("DEBUG_HIGH", 31744);
+
 
 /* Now I do the alibInit because why wouldn't you? And why should I make
 you? */

@@ -53,6 +53,81 @@ class idb extends mysqli
       {
         $this->close();
       }
+
+    function query($query) {
+      try {
+	if (D::allowed(DEBUG_QUERY|DEBUG_PROFILE_QUERY)) {
+	  $result = $this->logQuery($query);
+	} else {
+	  if( !$this->real_query($query) ) {// returns true or false
+	    throw new idbQuery_Exception( "Query $query returned error: \"".$this->error."\"", $this->errno );
+	  }
+	  $result = new iRes($this); // build you subclass
+	}
+	return $result;
+      } catch (Exception $e) {
+	if (!isset(D::$config['handleErrors']) || D::$config['handleErrors']) {
+	  D::exception($e);
+	} else {
+	  print "Query Error: ".$e->getMessage();
+	  exit;
+	}
+      }
+    }
+
+    function logQuery($query) {
+      if (D::allowed(DEBUG_PROFILE_QUERY)) {
+	$this->real_query("set profiling=1;");
+	$starttime = microtime(true);
+	if( !$this->real_query($query) ) {// returns true or false
+	  throw new idbQuery_Exception( "Query $query returned error: \"".$this->error."\"", $this->errno );
+	}
+	$result = new iRes($this);
+	$endtime = microtime(true);
+	$profile = array();
+	$profileRes = parent::query("show profile all");
+	while ($row = $profileRes->fetch_assoc()) {
+	  $profile[] = $row;
+	}
+	$describe = array();
+	$describeRes = parent::query("describe ".$query);;
+	while ($row = $describeRes->fetch_assoc()) {
+	  $describe[] = $row;
+	}
+	$queryInfo = array(
+			   'query' => $query,
+			   'elapsed' => $endtime - $starttime,
+			   'rows' => $result->num_rows,
+			   'columns' => $result->field_count,
+			   'profile' => $profile,
+			   'description' => $describe
+			   );
+	D::log($queryInfo, "PROFILE_QUERY");
+	$this->real_query("set profiling=0;");
+	return $result;
+      } else {
+	$starttime = microtime(true);
+	if( !$this->real_query($query) ) {// returns true or false
+	  throw new idbQuery_Exception( "Query $query returned error: \"".$this->error."\"", $this->errno );
+	}
+	$result = new iRes($this); // build you subclass
+	$endtime = microtime(true);
+	$queryInfo = array(
+			   'query' => $query,
+			   'elapsed' => $endtime - $starttime,
+			   'rows' => $result->num_rows,
+			   'columns' => $result->field_count
+			   );
+	D::log($queryInfo, "QUERY");
+	return $result;
+      }
+    }
+
+    function prepare($query) {
+        $stmt = new iStmt($this, $query);
+        return $stmt;
+    }
+
     /**
      * f
      *
@@ -63,4 +138,40 @@ class idb extends mysqli
         print ("F");
       }
   };
+
+class iStmt extends MySQLi_Stmt {
+  function execute() {
+    try {
+    /* Add exceptions here! */
+    $retval = parent::execute();
+    if ($this->errno > 0) {
+      throw new idbQuery_Exception( "Prepared statement returned error: \"".$this->error."\"", $this->errno );
+    }
+    return $retval;
+    } catch (Exception $e) {
+      if (!isset(D::$config['handleErrors']) || D::$config['handleErrors']) {
+	D::exception($e);
+      } else {
+	print "Query Error: ".$e->getMessage();
+	exit;
+      }
+    }
+  }
+
+  function __destruct() {
+    $this->close();
+  }
+}
+
+class iRes extends MySQLi_Result {
+  function __destruct() {
+    $this->free();
+  }
+}
+
+
+class idb_Exception extends Exception {}
+class idbConnection_Exception extends idb_Exception {}
+class idbQuery_Exception extends idb_Exception {}
+
 ?>

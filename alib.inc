@@ -524,11 +524,12 @@ define("DEBUG_INFO", 4);
 define("DEBUG_ERROR", 8);
 define("DEBUG_EXCEPTION", 16);
 define("DEBUG_VARIABLE", 32);
+define("DEBUG_QUERY", 64);
 /* Space for user defined debugging low levels*/
 
 define("DEBUG_TRACE", 1024);
 define("DEBUG_MEMORY", 2048);
-define("DEBUG_QUERY", 4096);
+define("DEBUG_PROFILE_QUERY", 4096);
 /* Space for user defined high debugging levels */
 
 

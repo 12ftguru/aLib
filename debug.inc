@@ -176,12 +176,20 @@ class Debug {
       self::log($error, 'ERROR');
   }
 
+  public static function allowed($type) {
+    $foo = self::$config['debugLevel'];
+    return $foo & $type;
+  }
+
    function __destruct() {
      self::$outputHandler->output();
      $string = ob_get_contents();
      ob_end_clean();
      print $string;
   }
+
+
+
 }
  
 /* For ease of typing: */

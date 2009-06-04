@@ -94,6 +94,24 @@ class firePHPDebugOutputHandler extends DebugOutputHandler {
 	  $data['Memory Usage'] = $this->getReadableBytes($data['Memory Usage']);
 	}
 	$this->fb->fb($data, $myTime.$data['name'], $fbtype);
+      } else if ($type == "QUERY") {
+	$fbtype = FirePHP::LOG;
+	$msg = '"'.$data['query'].'" took '.$this->getReadableTime($data['elapsed']). ' and returned '.$data['rows'].' row(s) and '.$data['columns'].' column(s).';
+	$this->fb->fb($msg, 'MySQL Query', $fbtype);
+      } else if ($type == "PROFILE_QUERY") {
+	$this->fb->group('MySQL Query Profile for: "'.$data['query'].'"', array("Collapsed" => TRUE));
+	$this->fb->fb('Query took '.$this->getReadableTime($data['elapsed']). ' and returned '.$data['rows'].' row(s) and '.$data['columns'].' column(s).');
+	$description = array();
+	$description[] = array_keys($data['description'][0]);
+	$description[] = array_values($data['description'][0]);
+	$this->fb->table("Query Description", $description);
+	$profile = array();
+	$profile[] = array_keys($data['profile'][0]);
+	foreach ($data['profile'] as $pArray) {
+	  $profile[] = array_values($pArray);
+	}
+	$this->fb->table("Query Profiler", $profile);
+	$this->fb->groupEnd();
       } else {
 	$fbtype = FirePHP::LOG;
 	$this->fb->fb($data, $myTime.$type, $fbtype);

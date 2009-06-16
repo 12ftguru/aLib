@@ -536,7 +536,7 @@ define("DEBUG_PROFILE_QUERY", 4096);
 define("DEBUG_ALL", 32767);
 define("DEBUG_LOW", 1023);
 define("DEBUG_HIGH", 31744);
-
+define("DEBUG_OFF", 0);
 
 /* Now I do the alibInit because why wouldn't you? And why should I make
 you? */

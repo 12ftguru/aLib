@@ -46,7 +46,19 @@ class idb extends mysqli
             $this->db = $args[3];
             $this->host = $args[2];
           }
-        parent::__construct($this->host, $this->user, $this->pass, $this->db);
+	try {
+	  parent::__construct($this->host, $this->user, $this->pass, $this->db);
+	  if ($this->connect_error) {
+	    throw new idbConnection_Exception("MySQL Connection error (".$this->connect_errno.") : ".$this->connect_error, $this->connect_errno);
+	  }
+	} catch (Exception $e) {
+	  if (!isset(D::$config['handleErrors']) || D::$config['handleErrors']) {
+	    D::exception($e);
+	  } else {
+	    print "Query Error: ".$e->getMessage();
+	    exit;
+	  }
+	}
       }
     
     function __destruct() 
@@ -90,7 +102,8 @@ class idb extends mysqli
 	  $profile[] = $row;
 	}
 	$describe = array();
-	$describeRes = parent::query("describe ".$query);;
+        $describestring = (stristr($query, 'select'))?"explain extended ":"describe ";
+	$describeRes = parent::query($describestring.$query);;
 	while ($row = $describeRes->fetch_assoc()) {
 	  $describe[] = $row;
 	}

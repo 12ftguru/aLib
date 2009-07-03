@@ -104,6 +104,7 @@ class idb extends mysqli
 	$describe = array();
         $describestring = (stristr($query, 'select'))?"explain extended ":"describe ";
 	$describeRes = parent::query($describestring.$query);;
+        if (is_object($describeRes)) {
 	while ($row = $describeRes->fetch_assoc()) {
 	  $describe[] = $row;
 	}
@@ -116,6 +117,9 @@ class idb extends mysqli
 			   'description' => $describe
 			   );
 	D::log($queryInfo, "PROFILE_QUERY");
+        } else {
+          D::log("Unable to fetch profiling info for ".$describestring.$query);
+        }
 	$this->real_query("set profiling=0;");
 	return $result;
       } else {
@@ -178,7 +182,7 @@ class iStmt extends MySQLi_Stmt {
 
 class iRes extends MySQLi_Result {
   function __destruct() {
-    $this->free();
+    @$this->free();
   }
 }
 

@@ -60,7 +60,6 @@ class mail extends anObject
             $string = $v->gn . " " . $v->sn . " <" . $v->email . ">";
             $v = $string;
           }
-        global $debug;
         if ($n == "from" || $n == "subject" || $n == "body") 
           {
             if ($n == "body") 
@@ -71,12 +70,10 @@ class mail extends anObject
               {
                 $this->_headers[$n] = $v;
               }
-            $debug->line("Setting " . $n . " to " . $v, 10);
           }
         else
           {
             $this->_headers[$n][] = $v;
-            $debug->line("Adding " . $v . " to " . $n, 10);
           }
       }
     

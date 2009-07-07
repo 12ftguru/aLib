@@ -59,13 +59,10 @@ function arrayFromDescription($description, $sort = TRUE)
 
 function sqlWhereFromDescription($columnname, $description, $bool = "OR") 
   {
-    global $debug;
     $temp = array();
     $count = 0;
     $temp = preg_split("/,\s*/", $description);
     $where = "";
-    $debug->line('temp', 4);
-    $debug->variable($temp, 4);
     foreach($temp as $tempString) 
       {
         if (preg_match('/(\d+)-(\d+)/', $tempString, $matches)) 

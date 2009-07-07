@@ -38,9 +38,8 @@ class template extends anObject
     
     function __construct($file = null) 
       {
-          global $user, $debug, $self, $config;
+          global $user, $self, $config;
           $this->set('user', $user);
-          $this->set('debug', $debug);
           $this->set('self', $self);
           $this->set('config', $config);
           
@@ -60,19 +59,14 @@ class template extends anObject
      */
     public function set($name, $value) 
       {
-        global $debug;
         if (is_object($value) && is_a($value, "template")) 
           {
             //someone passed us a template
             $this->vars[$name] = $value->parse();
-            $debug->line("Parsed template into var $name", 10);
-            $debug->variable($value, 10);
           }
         else
           {
             $this->vars[$name] = $value;
-            $debug->line("Parsed value into var $name", 10);
-            $debug->variable($value, 10);
           }
       }
     /**
@@ -84,7 +78,6 @@ class template extends anObject
      */
     public function push($name, $value) 
       {
-        global $debug;
         if (isset($this->vars[$name]) && !is_array($this->vars[$name])) 
           {
             # Convert to an array...
@@ -96,14 +89,10 @@ class template extends anObject
           {
             //someone passed us a template
             $this->vars[$name][] = $value->parse();
-            $debug->line("Parsed template into var $name", 10);
-            $debug->variable($value, 10);
           }
         else
           {
             $this->vars[$name][] = $value;
-            $debug->line("Parsed value into var $name", 10);
-            $debug->variable($value, 10);
           }
       }
     /**
@@ -114,19 +103,11 @@ class template extends anObject
      */
     public function parse($file = null) 
       {
-        global $debug;
-        $debug->debug('Parsing from: %s', __CLASS__, 3);
-        
         if (!$file) $file = $this->file;
         if (is_array($this->vars)) 
           {
             extract($this->vars);
           }
-        else
-          {
-            $debug->line("template.inc: No variables to interpolate", 1);
-          }
-        $debug->line('including file: ' . $file, 11);
         if ($file != '') 
           {
             ob_start();
@@ -134,7 +115,6 @@ class template extends anObject
             $contents = ob_get_contents();
             ob_end_clean();
           }
-        $debug->line('returning contents: <br />' . $contents, 11);
         return $contents;
       }
     /**
@@ -150,10 +130,9 @@ class template extends anObject
 
     public function clear($file = null) 
       {
-          global $user, $debug, $self, $config;
+          global $user, $self, $config;
           $this->vars = array();
           $this->set('user', $user);
-          $this->set('debug', $debug);
           $this->set('self', $self);
           $this->set('config', $config);
       }

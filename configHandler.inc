@@ -33,12 +33,6 @@ class config extends anObject
     public 
     function __get($name) 
       {
-        global $debug;
-        if ($debug->level >= 10) 
-          {
-            $debug->line("Object (" . get_class($this) . ") __get $name = ", 10);
-            $debug->variable($this->_configVars[$name], 10);
-          }
         return $this->_configVars[$name];
       }
     public 
@@ -57,24 +51,15 @@ class config extends anObject
       {
         if ($filename) 
           {
-            global $debug;
             $origVars = get_defined_vars();
             $origVars['origVars'] = TRUE;
             if (include_once ($filename)) 
               {
-                if ($debug->level >= 10) 
-                  {
-                    $debug->line('Loading config file: ' . $filename, 10);
-                  }
                 $this->loadedFiles[] = $filename;
                 $newVars = get_defined_vars();
                 $loadedVars = array_diff(array_keys($newVars) , array_keys($origVars));
                 foreach($loadedVars as $key) 
                   {
-                    if ($debug->level >= 10) 
-                      {
-                        $debug->line('Setting config variable: ' . $key, 10);
-                      }
                     $this->_configVars[$key] = $newVars[$key];
                   }
               }

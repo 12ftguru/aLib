@@ -98,9 +98,7 @@ abstract class smartObject extends anObject {
       return call_user_func_array('sprintf', $vars);
     } else {
       foreach (array_keys($this->vars) as $key) {
-        if ($this->{$key}) {
-        $retval[$key] = $this->{$key};
-        }
+        $retval[$key] = $this->vars[$key];
       }
       $retval['sotype'] = get_class($this);
       return json_encode($retval);

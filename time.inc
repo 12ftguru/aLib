@@ -209,7 +209,7 @@ function secondsHumanReadable($secondsIn)
                     
                     function TZDate($timezone = "EST5EDT", $formatstring = UTCFORMAT, $time = NULL) 
                       {
-                        global $AGLOBAL, $debug;
+                        global $AGLOBAL;
                         if (!isset($time)) 
                           {
                             $time = time();
@@ -595,7 +595,7 @@ function secondsHumanReadable($secondsIn)
                     
                     function parseTimeString($aDate, $aTime = NULL, $timezone = "EST5EDT") 
                       {
-                        global $AGLOBAL, $debug;
+                        global $AGLOBAL;
                         // First we check the format
                         if (ereg("([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})", $aDate, $regs)) 
                           {
@@ -605,7 +605,6 @@ function secondsHumanReadable($secondsIn)
                           }
                         else
                           {
-                            $debug->line("Invalid Date Format: $aDate. Date should be in x/x/xxxx format", 7);
                             return 0;
                           }
                         // check to see if we were passed a time value
@@ -629,7 +628,6 @@ function secondsHumanReadable($secondsIn)
                               }
                             else
                               {
-                                $debug->line("Invalid Time Format: $aTime. Time should be in x:xx am format<br>", 7);
                                 return 0;
                               }
                           }
@@ -640,7 +638,6 @@ function secondsHumanReadable($secondsIn)
                             $h = 1;
                             $mn = 0;
                           }
-                        $debug->line("Doing TZmktime for $m/$d/$y $h:$mn $timezone", 7);
                         // now if we know that we have a valid date and time we make a timestamp and return it
                         return TZmktime($timezone, $h, $mn, 0, $m, $d, $y);
                       }

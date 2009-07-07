@@ -123,13 +123,8 @@ abstract class anObject
     function __get($name) 
       {
         global $debug;
-        if ($debug->level >= 10) 
-          {
-            $debug->line("Object (" . get_class($this) . ") __get $name = ", 10);
-            $debug->variable($this->$name, 10);
-          }
 	if ($this->$name) {
-        return $this->$name;
+          return $this->$name;
 	} else {
 	  $v = get_class_vars($this);
 	  $underscores = strtolower(preg_replace('/([A-Z]{1,1}[A-Za-z]+)/', '_$1', $name));
@@ -165,35 +160,9 @@ abstract class anObject
 	  call_user_func_array(array($this, $underscores), $a);
 	} else if (in_array($camelcase, $m)) {
 	  call_user_func_array(array($this, $camelcase), $a);
-	} else if ($debug->level >= 1) 
-          {
-            $debug->line("Undefined function call: " . $f . " (or ".$underscores." ) from class " . $c . " with args:", 1);
-            $debug->variable($a, 1);
-            $debug->line("Actual allowed methods for " . $c . ":", 1);
-            $debug->variable($m, 1);
-          }
+	} 
       }
-    public 
-    function __set($name, $value) 
-      {
-        global $debug;
-        if ($debug->level >= 10) 
-          {
-            if (isset($this->$name)) 
-              {
-                $debug->line("Object (" . get_class($this) . ") changing $name. Was:", 10);
-                $debug->variable($this->$name, 10);
-                $debug->line("Object (" . get_class($this) . ") changing $name. To:", 10);
-                $debug->variable($value);
-              }
-            else
-              {
-                $debug->line("Object (" . get_class($this) . ") setting " . $name, 10);
-                $debug->variable($value, 10);
-              }
-          }
-        $this->$name = $value;
-      }
+
   }
 
 

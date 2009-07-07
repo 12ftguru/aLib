@@ -134,6 +134,8 @@ abstract class smartObject extends anObject {
           return FALSE;
         } 
       } else {
+        $this->error = $db->error;
+        $this->errno = $db->errno;
         return $db->error;
       }
     } else {

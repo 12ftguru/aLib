@@ -77,7 +77,7 @@ abstract class smartObject extends anObject {
           } else {
             return json_decode($this->vars[$name]);
           }
-        } else if (($name == 'errno' || $name == 'error') && ! in_array($this->vars[$name])) {
+        } else if (($name == 'errno' || $name == 'error') && ! in_array($name, array_keys($this->vars))) {
           return $this->$name;
 	} else if (!is_array($this->foreignKeys[$name])) {
 	  return $this->vars[$name];
@@ -133,6 +133,8 @@ abstract class smartObject extends anObject {
           }
           return TRUE;
         } else {
+          $this->errno = TRUE;
+          $this->error = "Query returned ".$res->num_rows." rows. smartObject queries should return only one row.";
           return FALSE;
         } 
       } else {

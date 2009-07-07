@@ -36,10 +36,10 @@ class Debug {
       self::$config = $config->debugConfig;
     } 
     /* Set up how we do our output */
-    if (CLI) {
-      self::$config['outputHandler'] = 'plainText';
-    } else if ($config->debug['outputHandler']) {
+    if ($config->debug['outputHandler']) {
       self::$config['outputHandler'] = $config->debug['outputHandler'];
+    } else if (CLI) {
+      self::$config['outputHandler'] = 'plainText';
     } else {
       self::$config['outputHandler'] = 'firePHP';
     }

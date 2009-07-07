@@ -36,8 +36,8 @@ class Debug {
       self::$config = $config->debugConfig;
     } 
     /* Set up how we do our output */
-    if ($config->debug['outputHandler']) {
-      self::$config['outputHandler'] = $config->debug['outputHandler'];
+    if (self::$config['outputHandler']) {
+      //ignore
     } else if (CLI) {
       self::$config['outputHandler'] = 'plainText';
     } else {

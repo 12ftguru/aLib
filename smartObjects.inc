@@ -77,6 +77,8 @@ abstract class smartObject extends anObject {
           } else {
             return json_decode($this->vars[$name]);
           }
+        } else if (($name == 'errno' || $name == 'error') && ! in_array($this->vars[$name])) {
+          return $this->$name;
 	} else if (!is_array($this->foreignKeys[$name])) {
 	  return $this->vars[$name];
 	} else {

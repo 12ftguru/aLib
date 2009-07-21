@@ -17,6 +17,11 @@
 /**
  * The Debug Object itself.
  *
+ * This is a static object that automatically determines whether you
+ * are using cli or web and adjusts its output
+ * accordingly. Additionally you may extend {@link DebugOutputHandler} to
+ * customize the debug output.
+ *
  * You should never have to create the debug object. Simply call the
  * static functions and the rest will take care of itself.
  *

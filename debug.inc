@@ -8,7 +8,7 @@
  * customize the debug output.
  *
  * @package aLib
- * @subpackage Debug
+ * @subpackage debug
  * @author Bryan P. Johnson <bryan@12ftguru.com>
  * @license http://www.opensource.org/licenses/bsd-license.php BSD
  * @version 3.0
@@ -27,16 +27,17 @@ class debug {
    * 
    * We grab our config from the global $config->debugConfig array if
    * it exists. Available options are:
-   *
-   * - outputHandler -- [optional] string name of output handler (will have "DebugOutputHandler" appended to it when determining the class name.
-   * - handleErrors -- bool Catch errors and convert them to exceptions
-   * - reportErrors -- integer Error reporting level (eg. "E_ALL ^ E_NOTICE")
-   * - ignoreNotices -- bool Catch all errors in reportErrors except notices & user_notices
-   * - ignoreWarnings -- bool Catch all errors in reportErrors except warnings & user_warnings
-   * - debugLevel -- integer Level of debugging to include. This is a bit field, although you may use the constants defined in {@link alib.inc}
-   * - groupByClass -- Have the outputHandler group items together based on the class they occurred in. (Not supported by all outputHandlers)
-   * - detailedOutput -- Add a summary to the output (elapsed time, memory usage, etc.) (Not supported by all outputHandlers)
-   * - showIncludedFiles -- Add a list of included files to the summary (Not supported by all outputHandlers)
+   * <ul>
+   * <li> outputHandler -- [optional] string name of output handler (will have "DebugOutputHandler" appended to it when determining the class name.</li>
+   * <li> handleErrors -- bool Catch errors and convert them to exceptions</li>
+   * <li> reportErrors -- integer Error reporting level (eg. "E_ALL ^ E_NOTICE")</li>
+   * <li> ignoreNotices -- bool Catch all errors in reportErrors except notices & user_notices</li>
+   * <li> ignoreWarnings -- bool Catch all errors in reportErrors except warnings & user_warnings</li>
+   * <li> debugLevel -- integer Level of debugging to include. This is a bit field, although you may use the constants defined in {@link alib.inc}</li>
+   * <li> groupByClass -- Have the outputHandler group items together based on the class they occurred in. (Not supported by all outputHandlers)</li>
+   * <li> detailedOutput -- Add a summary to the output (elapsed time, memory usage, etc.) (Not supported by all outputHandlers)</li>
+   * <li> showIncludedFiles -- Add a list of included files to the summary (Not supported by all outputHandlers)</li>
+   * </ul>
    *
    * @var array
    */

@@ -49,8 +49,7 @@ function alibInit() {
  * @return none
  */
 
-function addIncludePath($directory, $recurse = FALSE) 
-  {
+function addIncludePath($directory, $recurse = FALSE) {
     if (is_array($directory)) 
       {
         foreach($directory as $dir) 
@@ -78,7 +77,7 @@ function addIncludePath($directory, $recurse = FALSE)
             if ($handle = opendir($directory)) 
               {
                           
-                while (false !== ($filename = readdir($handle))) 
+                while (FALSE !== ($filename = readdir($handle))) 
                   {
                      
                       
@@ -118,14 +117,24 @@ function __autoload($className) {
  *
  * This way we ensure that all of our objects have the same
  * interfaces.
- * @package aLib
- * @subpackage Utility
- * @author BrYan P. Johnson
- * @version 3.0
+ *
  */
 abstract class anObject {
+  
+  /**
+   * Create the object.
+   */
     public function __construct() {
       }
+
+  /**
+   * Create the object.
+   *
+   * @param string $name Name of the var to get. Checks for camelCase and under_score versions.
+   * 
+   * @return mixed
+   */
+
     public function __get($name) {
         global $debug;
 	if ($this->$name) {
@@ -143,10 +152,15 @@ abstract class anObject {
 	  }
 	}
       }
+
     /**
      * This catches any calls to undefined functions.
      * If you camelcased when the function was underscored ( fetchAssoc versus fetch_assoc ) or vice versa, we will autocorrect.
-     * Yum. With debuglevel of 0, it's silent.
+     *
+     * @param string $f Function name
+     * @param string $a Arguments for the function
+     *
+     * @return mixed Return Value of function.
      */
     public function __call($f, $a) {
         global $debug;

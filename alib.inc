@@ -5,12 +5,19 @@
  * them. (They're documented below). It also defines the anObject
  * object, the one from which all other alib objects should be.
  * defined.
+ *
  * @package aLib
  * @author BrYan P. Johnson
  * @version 3.0
+ * @license http://www.opensource.org/licenses/bsd-license.php BSD
+ * @category aLib
+ * @link http://github.com/12ftguru/aLib/tree/master GitHub Home 
  */
+
 /**
  * function alib_init -- initializes the alib. Don't worry. Just ignore it.
+ * 
+ * @return none
  */
 
 function alibInit() 
@@ -37,7 +44,7 @@ function alibInit()
 /**
  * Add a path to the include path, independent of system
  *
- * @param string or array $directory Directory(s) to add to the include path
+ * @param string|array $directory Directory(s) to add to the include path
  * @param bool $recurse Add subdirectories to the include path
  * @return none
  */

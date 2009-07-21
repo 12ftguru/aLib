@@ -128,7 +128,7 @@ abstract class anObject {
       }
 
   /**
-   * Create the object.
+   * Overloaded Getter
    *
    * @param string $name Name of the var to get. Checks for camelCase and under_score versions.
    * 

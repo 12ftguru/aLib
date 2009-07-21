@@ -1,11 +1,8 @@
 <?php
 
 /**
- * Confighandler -- 
+ * Config -- Our global config object.
  *
- * 
- *
- * @category Utility
  * @package aLib
  * @author Bryan P Johnson <bryan@12ftguru.com>
  * @license http://www.opensource.org/licenses/bsd-license.php BSD
@@ -33,6 +30,7 @@ class config extends anObject
      * Create our config object
      *
      * @param string $filename Config file to load
+     *
      * @return object
      */
     public function __construct($filename = FALSE) {
@@ -66,7 +64,7 @@ class config extends anObject
      */
 
     public function __set($name, $value) {
-        return false;
+        return FALSE;
       }
     /**
      * Load an additional config file

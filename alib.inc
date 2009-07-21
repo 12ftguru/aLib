@@ -6,11 +6,11 @@
  * object, the one from which all other alib objects should be.
  * defined.
  *
- * @package aLib
- * @author BrYan P. Johnson
- * @version 3.0
- * @license http://www.opensource.org/licenses/bsd-license.php BSD
  * @category aLib
+ * @package aLib
+ * @author BrYan P. Johnson <bryan@12ftguru.com>
+ * @license http://www.opensource.org/licenses/bsd-license.php BSD
+ * @version 3.0
  * @link http://github.com/12ftguru/aLib/tree/master GitHub Home 
  */
 
@@ -20,8 +20,7 @@
  * @return none
  */
 
-function alibInit() 
-  {
+function alibInit() {
     addIncludePath('.');
     global $debug, $debugLevel, $debugStyle;
     include_once ('configHandler.inc');
@@ -46,6 +45,7 @@ function alibInit()
  *
  * @param string|array $directory Directory(s) to add to the include path
  * @param bool $recurse Add subdirectories to the include path
+ *
  * @return none
  */
 
@@ -93,20 +93,23 @@ function addIncludePath($directory, $recurse = FALSE)
               }
           }
       }
-  } # End addIncludePath
+  } // End addIncludePath
 
 /**
  * We autoload any object someone tries to load. If there is a file by
  * the same name as the object, we load it. Since object class names
  * are case insensitive, we downcase the filename. No more including!
+ *
+ * @param string $className name of the class to autoload
+ *
+ * @return none
  */
 
-function __autoload($class_name) 
-  {
-    if (preg_match('/^[A-Za-z0-9\.\-\_]+$/', $class_name)) {
-    if (!include_once (strtolower($class_name) . ".inc")) 
+function __autoload($className) {
+    if (preg_match('/^[A-Za-z0-9\.\-\_]+$/', $className)) {
+    if (!include_once (strtolower($className) . ".inc")) 
       {
-        include_once ($class_name . ".inc");
+        include_once ($className . ".inc");
       }
     }
   }
@@ -120,15 +123,10 @@ function __autoload($class_name)
  * @author BrYan P. Johnson
  * @version 3.0
  */
-abstract class anObject
-  {
-    public 
-    function __construct() 
-      {
+abstract class anObject {
+    public function __construct() {
       }
-    public 
-    function __get($name) 
-      {
+    public function __get($name) {
         global $debug;
 	if ($this->$name) {
           return $this->$name;
@@ -150,9 +148,7 @@ abstract class anObject
      * If you camelcased when the function was underscored ( fetchAssoc versus fetch_assoc ) or vice versa, we will autocorrect.
      * Yum. With debuglevel of 0, it's silent.
      */
-    public 
-    function __call($f, $a) 
-      {
+    public function __call($f, $a) {
         global $debug;
 	$m = get_class_methods($this);
 	$c = get_class($this);
@@ -161,7 +157,6 @@ abstract class anObject
 
         $underscores = strtolower(preg_replace('/([A-Z]{1,1}[A-Za-z]+)/', '_$1', $f));
 	$camelcase = strtolower(preg_replace('/_/', '', $f));
-
 
 	if (in_array($underscores, $m)) {
 	  call_user_func_array(array($this, $underscores), $a);
@@ -178,9 +173,9 @@ abstract class anObject
 
 /* Now determine if we're CLI or Web */
 if (isset($_SERVER['argc'])) {
-    define('CLI', true);
+    define('CLI', TRUE);
 } else {
-    define('CLI', false);
+    define('CLI', FALSE);
 }
 
 /* Our debug levels: */

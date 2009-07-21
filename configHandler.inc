@@ -22,7 +22,7 @@
  * <code>print $config->myVar; //Prints "myVal"</code> 
  *
  */
-class config extends anObject
+class configHandler extends anObject
   {
     private $_configVars;
     public $loadedFiles;
@@ -95,9 +95,9 @@ class config extends anObject
 
 global $config, $configFile;
 if ($configFile) {
-  $config = new config($configFile);
+  $config = new configHandler($configFile);
 } else {
-  $config = new config();
+  $config = new configHandler();
 }
 
 ?>

@@ -1,16 +1,29 @@
 <?php
+
 /**
- * Loads an alib configuration file into local scope for later handling.
+ * Confighandler -- 
  *
+ * 
  *
- * @author   BrYan P. Johnson
+ * @category Utility
  * @package aLib
- * @version 1.0
+ * @author Bryan P Johnson <bryan@12ftguru.com>
+ * @license http://www.opensource.org/licenses/bsd-license.php BSD
+ * @version 3.0
  */
+
+
 /**
- * Our config class.
+ * The Config Object
  *
- * @package aLib
+ * This object is useful for storing various variables related to the configuration of your application:
+ * A file called config.inc looking like:
+ * <code><?PHP
+ * $myVar = "myVal";
+ * ?></code>
+ * Would be accessed thus:
+ * <code>print $config->myVar; //Prints "myVal"</code> 
+ *
  */
 class config extends anObject
   {
@@ -22,35 +35,48 @@ class config extends anObject
      * @param string $filename Config file to load
      * @return object
      */
-    public 
-    function __construct($filename = FALSE) 
-      {
+    public function __construct($filename = FALSE) {
         if ($filename) 
           {
             $this->loadFile($filename);
           }
       }
-    public 
-    function __get($name) 
-      {
+
+  /**
+   * Overloaded Getter
+   *
+   * @param string $name Name of the var to get.
+   * 
+   * @return mixed
+   */
+
+    public function __get($name) {
         return $this->_configVars[$name];
       }
-    public 
-    function __set($name, $value) 
-      {
+
+    /**
+     * Overloaded Setter
+     *
+     * Returns false because config vars can't be set.
+     *
+     * @param string $name Name of var to set.
+     * @param mixed $value Name of value to set var to.
+     *
+     * @return bool
+     */
+
+    public function __set($name, $value) {
         return false;
       }
     /**
      * Load an additional config file
      *
      * @param string $filename File to load
+     *
      * @return bool
      */
-    public 
-    function loadFile($filename) 
-      {
-        if ($filename) 
-          {
+    public function loadFile($filename) {
+        if ($filename) {
             $origVars = get_defined_vars();
             $origVars['origVars'] = TRUE;
             if (include_once ($filename)) 
@@ -61,18 +87,19 @@ class config extends anObject
                 foreach($loadedVars as $key) 
                   {
                     $this->_configVars[$key] = $newVars[$key];
+		    unset($GLOBALS[$key]); //don't pollute the global namespace
                   }
               }
           }
       }
-  };
+  }; //End config object.
+
+
 global $config, $configFile;
-if ($configFile) 
-  {
-    $config = new config($configFile);
-  }
-else
-  {
-    $config = new config();
-  }
+if ($configFile) {
+  $config = new config($configFile);
+} else {
+  $config = new config();
+}
+
 ?>

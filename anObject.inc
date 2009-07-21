@@ -5,7 +5,7 @@
  * All of your objects should inherit from this if possible.
  *
  * @package aLib
- * @subpackage aLib
+ * @subpackage aLibCore
  * @author Bryan P Johnson <bryan@12ftguru.com>
  * @license http://www.opensource.org/licenses/bsd-license.php BSD
  * @version 3.0

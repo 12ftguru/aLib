@@ -1,23 +1,48 @@
 <?PHP
-
-
-
 /**
- * The Debug Object, FirePHP compatible.
+ * The Debug Object
  *
  * This is a static object that automatically determines whether you
- * are using cli or web and adjusts its output accordingly.
+ * are using cli or web and adjusts its output
+ * accordingly. Additionally you may extend {@link DebugOutputHandler} to
+ * customize the debug output.
  *
- * @author Bryan P. Johnson <bryan@12ftguru.com>
- * @version 3.0
  * @package aLib
  * @subpackage Debug
+ * @author Bryan P. Johnson <bryan@12ftguru.com>
+ * @license http://www.opensource.org/licenses/bsd-license.php BSD
+ * @version 3.0
  */
 
-class Debug {
+/**
+ * The Debug Object itself.
+ *
+ * You should never have to create the debug object. Simply call the
+ * static functions and the rest will take care of itself.
+ *
+ */
+class debug {
+  /**
+   * Configuration of debugging:
+   * 
+   * We grab our config from the global $config->debugConfig array if
+   * it exists. Available options are:
+   *
+   * - outputHandler -- [optional] string name of output handler (will have "DebugOutputHandler" appended to it when determining the class name.
+   * - handleErrors -- bool Catch errors and convert them to exceptions
+   * - reportErrors -- integer Error reporting level (eg. "E_ALL ^ E_NOTICE")
+   * - ignoreNotices -- bool Catch all errors in reportErrors except notices & user_notices
+   * - ignoreWarnings -- bool Catch all errors in reportErrors except warnings & user_warnings
+   * - debugLevel -- integer Level of debugging to include. This is a bit field, although you may use the constants defined in {@link alib.inc}
+   * - groupByClass -- Have the outputHandler group items together based on the class they occurred in. (Not supported by all outputHandlers)
+   * - detailedOutput -- Add a summary to the output (elapsed time, memory usage, etc.) (Not supported by all outputHandlers)
+   * - showIncludedFiles -- Add a list of included files to the summary (Not supported by all outputHandlers)
+   *
+   * @var array
+   */
   public static $config = array();
   public static $output = array();
-  public  static $counts = array();
+  public static $counts = array();
   protected static $outputHandler;
   protected static $instance = null;
 

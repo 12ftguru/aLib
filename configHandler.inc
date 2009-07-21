@@ -4,6 +4,7 @@
  * Config -- Our global config object.
  *
  * @package aLib
+ * @subpackage Config
  * @author Bryan P Johnson <bryan@12ftguru.com>
  * @license http://www.opensource.org/licenses/bsd-license.php BSD
  * @version 3.0

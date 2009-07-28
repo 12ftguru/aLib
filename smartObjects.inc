@@ -48,6 +48,8 @@ abstract class smartObject extends anObject {
 
     public function __set($name, $value) 
       {
+	D::log("Attempting to set $name", 'GETSET', "SmartObject Internals");
+	D::log("Value: ".serialize($value), 'GETSET', "SmartObject Internals");
 	if ($name == 'id' && $this->idField != 'id') {
           $this->vars[$this->idField] = $value;
 	} else if (in_array($name, $this->serializedKeys)) {
@@ -73,6 +75,7 @@ abstract class smartObject extends anObject {
 
   public function __get($name) 
       {
+	D::log("Attempting to get $name", 'GETSET', "SmartObject Internals");
 	if ($name == 'id' && $this->idField != 'id') {
 	  return $this->vars[$this->idField];
 	} else if (in_array($name, $this->serializedKeys)) {

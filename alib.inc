@@ -138,6 +138,7 @@ define("DEBUG_QUERY", 64);
 define("DEBUG_TRACE", 1024);
 define("DEBUG_MEMORY", 2048);
 define("DEBUG_PROFILE_QUERY", 4096);
+define("DEBUG_GETSET", 8192);
 /* Space for user defined high debugging levels */
 
 

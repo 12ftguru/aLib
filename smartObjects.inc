@@ -156,7 +156,10 @@ abstract class smartObject extends anObject {
       $keys = array_keys($this->vars);
       $sql .= implode(',', $keys);
       $sql .= ") values (";
-      $sql .= array_map(array($this->db, 'real_escape_string'), array_values($this->vars));
+      foreach ($this->vars as $key => $val) {
+	$sql .= "'".$db->real_escape_string($val)."', ";
+      }
+      $sql = substr($sql, 0, -2);
       $sql .= ")";
       Debug::log("Smart Object attempting to insert: ".$sql);
       $this->db->query($sql);

@@ -153,16 +153,16 @@ abstract class smartObject extends anObject {
       foreach ($this->foreignKeys as $fkey => $farray) {
         $this->vars[$farray['key']] = $farray['obj']->id;
       }
-      $keys = array_keys($this->vals);
+      $keys = array_keys($this->vars);
       $sql .= implode(',', $keys);
       $sql .= ") values (";
-      $sql .= array_map(array($this->db, 'real_escape_string'), array_values($this->vals));
+      $sql .= array_map(array($this->db, 'real_escape_string'), array_values($this->vars));
       $sql .= ")";
       Debug::log("Smart Object attempting to insert: ".$sql);
       $this->db->query($sql);
       if ($this->db->insert_id > 0) {
-        $this->vals[$this->idField] = $this->db->insert_id;
-        return $this->vals[$this->idField];
+        $this->vars[$this->idField] = $this->db->insert_id;
+        return $this->vars[$this->idField];
       }
     } else {
       return FALSE;

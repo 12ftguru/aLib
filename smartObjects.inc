@@ -157,7 +157,7 @@ abstract class smartObject extends anObject {
       $sql .= implode(',', $keys);
       $sql .= ") values (";
       foreach ($this->vars as $key => $val) {
-	$sql .= "'".$db->real_escape_string($val)."', ";
+	$sql .= "'".$this->db->real_escape_string($val)."', ";
       }
       $sql = substr($sql, 0, -2);
       $sql .= ")";

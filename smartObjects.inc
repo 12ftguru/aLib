@@ -64,7 +64,7 @@ abstract class smartObject extends anObject {
             $this->foreignKeys[$name]['obj'] = $value;
           } else {
 	    D::log("Value was either not an object or not specifically a \"".$this->foreignKeys[$name]['type']."\" object.", "LOG", "SmartObject Internals");
-	    D::v($value instanceof $this->foreignKeys[$name]['type'], "VARIABLE", "SmartObject Internals");
+	    D::log("Value class: ".get_class($value)." -> ".get_parent_class($value), "LOG", "SmartObject Internals");
 	    D::v($value, "VARIABLE", "SmartObject Internals");
 	  }
 	} else {

@@ -173,7 +173,9 @@ abstract class smartObject extends anObject {
     if (is_a($this->db, 'idb')) {
       $sql = "update `".$this->table."` set ";
       foreach ($this->foreignKeys as $fkey => $farray) {
-        $this->vars[$farray['key']] = $farray['obj']->id;
+	if (is_object($farray['obj']) && $farray['obj']->id) {
+	    $this->vars[$farray['key']] = $farray['obj']->id;
+	} 
       }
       foreach ($this->vars as $key => $val) {
         if ($key != $this->idField) {

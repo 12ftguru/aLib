@@ -132,9 +132,11 @@ class idb extends mysqli
 	$queryInfo = array(
 			   'query' => $query,
 			   'elapsed' => $endtime - $starttime,
-			   'rows' => $result->num_rows,
-			   'columns' => $result->field_count
 			   );
+	if ($result instanceof iRes) {
+	  $queryInfo['rows'] = $result->num_rows;
+	  $queryInfo['columns'] = $result->field_count;
+	}
 	D::log($queryInfo, "QUERY");
 	return $result;
       }

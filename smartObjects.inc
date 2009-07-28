@@ -60,7 +60,11 @@ abstract class smartObject extends anObject {
           if (is_object($value) && ($value instanceof $this->foreignKeys[$name]['type'])) {
             $this->vars[$this->foreignKeys[$name]['key']] = $value->id;
             $this->foreignKeys[$name]['obj'] = $value;
-          }
+          } else {
+	    D::log("Value was either not an object or not specifically a \"".$this->foreignKeys[$name]['type']."\" object.", "LOG", "SmartObject Internals");
+	    D::v($value instanceof $this->foreignKeys[$name]['type'], "VARIABLE", "SmartObject Internals");
+	    D::v($value, "VARIABLE", "SmartObject Internals");
+	  }
 	} else {
 	  $this->vars[$name] = $value;
 	}
@@ -123,7 +127,7 @@ abstract class smartObject extends anObject {
     if (is_a($this->db, 'idb')) {
       $sql = "select * from `".$this->table."` where `".$this->idField."` = '".$this->db->real_escape_string($this->vars[$this->idField])."'";
       $this->reset();
-      Debug::log('SmartObject Read SQL: '.$sql);
+      Debug::log('SmartObject Read SQL: '.$sql, "LOG", "SmartObject Internals");
       $res = $this->db->query($sql);
       if (is_object($res)) {
         if ($res->num_rows == 1) {
@@ -161,7 +165,7 @@ abstract class smartObject extends anObject {
       }
       $sql = substr($sql, 0, -2);
       $sql .= ")";
-      Debug::log("Smart Object attempting to insert: ".$sql);
+      Debug::log("Smart Object attempting to insert: ".$sql, "LOG", "SmartObject Internals");
       $this->db->query($sql);
       if ($this->db->insert_id > 0) {
         $this->vars[$this->idField] = $this->db->insert_id;
@@ -187,7 +191,7 @@ abstract class smartObject extends anObject {
       }
       $sql = substr($sql, 0, -2);
       $sql .= " where `".$this->idField."` = '".$this->db->real_escape_string($this->vars[$this->idField])."'";
-      Debug::log("Smart Object attempting to update: ".$sql);
+      Debug::log("Smart Object attempting to update: ".$sql, "LOG", "SmartObject Internals");
       $this->db->query($sql);
       if ($this->db->errno == 0) {
         return TRUE;
@@ -199,7 +203,7 @@ abstract class smartObject extends anObject {
   public function delete() {
     if (is_a($this->db, 'idb')) {
       $sql = "delete from `".$this->table."` where `".$this->idField."` = '".$this->db->real_escape_string($this->vars[$this->idField])."' limit 1";
-      Debug::log('SmartObject Delete SQL: '.$sql);
+      Debug::log('SmartObject Delete SQL: '.$sql, "LOG", "SmartObject Internals");
       $res = $this->db->query($sql);
       $this->reset();
       if ($this->db->errno == 0) {
@@ -399,7 +403,7 @@ class smartObjectFactory {
       $this->queryString .= " `".$method."` = '".$this->db->real_escape_string($args[0])."'";
       $this->numWheres++;
     }
-    Debug::log("SOF QS: ".$this->queryString);
+    Debug::log("Query Builder: ".$this->queryString, "LOG", "SmartObject Internals");
     return self::$instance;
   }
 
@@ -417,7 +421,7 @@ class smartObjectFactory {
       $smartResult = new smartResult($db);
       $smartResult->resultType = $this->objType;
       $smartResult->resultParams = $this->objArgs;
-      Debug::variable($smartResult);
+      Debug::variable($smartResult, "VARIABLE", "SmartObject Internals");
       $this->reset();
       return $smartResult;
     } else {

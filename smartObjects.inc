@@ -23,7 +23,7 @@ abstract class smartObject extends anObject {
     );
   */
   protected $format = 'json'; // interpret as a json string when called as a string.
-  protected $vars = array();
+  public $vars = array();
 
   public function __construct($id = NULL) {
     global $db;

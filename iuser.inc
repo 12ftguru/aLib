@@ -3,9 +3,9 @@
 class iuser extends smartObject {
   public $table = 'users';
   public $idField = 'userID'; //or FALSE 
-  protected $foreignKeys = array('buddy' => array('key' => 'buddyID',
+ /* protected $foreignKeys = array('buddy' => array('key' => 'buddyID',
                                                   'type' => 'iuser')); // '<name>' => array('key' => '<foreignKey>',
-  	    		   	       // 	            'type' => '<smartObjectType>),
+  	    		   	       // 	            'type' => '<smartObjectType>), */
   protected $serializedKeys = array();
   
    protected $format = array(
@@ -13,11 +13,7 @@ class iuser extends smartObject {
 			  'vars' => array('gn', 'sn', 'email') // class variables;
 			  );
    //  protected $format = 'json';
-  function __get($name) {
-    if ($name != 'passwd') {
-      return parent::__get($name);
-    }
-  }
+  
 }
 
 

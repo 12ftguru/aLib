@@ -82,7 +82,7 @@ abstract class smartObject extends anObject {
           if ($this->serializeMethod == 'php') {
             return unserialize($this->vars[$name]);
           } else {
-            return json_decode($this->vars[$name]);
+            return json_decode($this->vars[$name], TRUE);
           }
         } else if (($name == 'errno' || $name == 'error') && ! in_array($name, array_keys($this->vars))) {
           return $this->$name;

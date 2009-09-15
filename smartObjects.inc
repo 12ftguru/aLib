@@ -24,17 +24,22 @@ abstract class smartObject extends anObject {
   */
   protected $format = 'json'; // interpret as a json string when called as a string.
   public $vars = array();
+  
 
-  public function __construct($id = NULL) {
-    global $db;
+  public function __construct($id = NULL, $mydb = NULL) {
     if ($this->idField === FALSE) {
       $this->idField = get_class($this)."ID";
     }
     if ($this->table === FALSE) {
       $this->table = strtolower(get_class($this))."s";
     }
-    if (is_a($db, 'idb')) {
-      $this->db = $db;
+    if (is_a($mydb, 'idb')) {
+      $this->db = $mydb;
+    } else {
+      global $db;
+      if (is_a($mydb, 'idb')) {
+	$this->db = $db;
+      }
     }
     if (is_array($id)) {
       foreach ($id as $key => $val) {
@@ -97,6 +102,7 @@ abstract class smartObject extends anObject {
 	  return $this->foreignKeys[$name]['obj'];
 	}
       }
+
 
   public function __toString() {
     if ($this->format != 'json') {

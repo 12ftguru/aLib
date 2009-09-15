@@ -236,4 +236,10 @@ abstract class DebugOutputHandler {
   abstract public function output();
 }
 
+class plainTextDebugOutputHandler extends DebugOutputHandler {
+  function output() {
+    
+  }
+}
+
 ?>

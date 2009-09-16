@@ -9,7 +9,7 @@
 abstract class smartObject extends anObject {
   public $table = FALSE;
   public $idField = FALSE;
-  protected $db;
+  public $db;
   public $error;
   public $errno;
   public $insertID;
@@ -176,9 +176,15 @@ abstract class smartObject extends anObject {
       $sql .= ")";
       Debug::log("Smart Object attempting to insert: ".$sql, "LOG", "SmartObject Internals");
       $this->db->query($sql);
+      $this->errno = $this->db->errno;
+      $this->error = $this->db->error;
       if ($this->db->insert_id > 0) {
         $this->vars[$this->idField] = $this->db->insert_id;
         return $this->vars[$this->idField];
+      } else if ($this->errno == 0) {
+	return TRUE;
+      } else {
+	return FALSE;
       }
     } else {
       return FALSE;
@@ -204,6 +210,8 @@ abstract class smartObject extends anObject {
       $this->db->query($sql);
       if ($this->db->errno == 0) {
         return TRUE;
+      } else {
+	return FALSE;
       }
     }
     return FALSE;

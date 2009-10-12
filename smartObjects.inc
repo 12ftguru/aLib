@@ -9,7 +9,7 @@
 abstract class smartObject extends anObject {
   public $table = FALSE;
   public $idField = FALSE;
-  protected $db;
+  public $db;
   public $error;
   public $errno;
   public $insertID;
@@ -24,17 +24,22 @@ abstract class smartObject extends anObject {
   */
   protected $format = 'json'; // interpret as a json string when called as a string.
   public $vars = array();
+  
 
-  public function __construct($id = NULL) {
-    global $db;
+  public function __construct($id = NULL, $mydb = NULL) {
     if ($this->idField === FALSE) {
       $this->idField = get_class($this)."ID";
     }
     if ($this->table === FALSE) {
       $this->table = strtolower(get_class($this))."s";
     }
-    if (is_a($db, 'idb')) {
-      $this->db = $db;
+    if (is_a($mydb, 'idb')) {
+      $this->db = $mydb;
+    } else {
+      global $db;
+      if (is_a($mydb, 'idb')) {
+	$this->db = $db;
+      }
     }
     if (is_array($id)) {
       foreach ($id as $key => $val) {
@@ -97,6 +102,7 @@ abstract class smartObject extends anObject {
 	  return $this->foreignKeys[$name]['obj'];
 	}
       }
+
 
   public function __toString() {
     if ($this->format != 'json') {
@@ -170,9 +176,15 @@ abstract class smartObject extends anObject {
       $sql .= ")";
       Debug::log("Smart Object attempting to insert: ".$sql, "LOG", "SmartObject Internals");
       $this->db->query($sql);
+      $this->errno = $this->db->errno;
+      $this->error = $this->db->error;
       if ($this->db->insert_id > 0) {
         $this->vars[$this->idField] = $this->db->insert_id;
         return $this->vars[$this->idField];
+      } else if ($this->errno == 0) {
+	return TRUE;
+      } else {
+	return FALSE;
       }
     } else {
       return FALSE;
@@ -198,6 +210,8 @@ abstract class smartObject extends anObject {
       $this->db->query($sql);
       if ($this->db->errno == 0) {
         return TRUE;
+      } else {
+	return FALSE;
       }
     }
     return FALSE;

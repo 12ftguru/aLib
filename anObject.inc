@@ -39,7 +39,7 @@ abstract class anObject {
 	if ($this->$name) {
           return $this->$name;
 	} else {
-	  $v = get_class_vars($this);
+	  $v = get_class_vars(get_class($this));
 	  $underscores = strtolower(preg_replace('/([A-Z]{1,1}[A-Za-z]+)/', '_$1', $name));
 	  $camelcase = strtolower(preg_replace('/_/', '', $name));
 	  if (is_array($v) && in_array($underscores, $v)) {

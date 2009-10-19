@@ -38,14 +38,23 @@ class template extends anObject
     
     function __construct($file = null) 
       {
-          global $user, $self, $config;
+	global $user, $self, $config, $info;
           $this->set('user', $user);
-          $this->set('self', $self);
           $this->set('config', $config);
-          
+	  $this->set('info', $info);
+
         $this->file = $file;
         parent::__construct();
       }
+
+    public function __get($name) {
+      if (isset($this->vars[$name])) {
+	return $this->vars[$name];
+      } else {
+	return $this->$name;
+      }
+    }
+
     public function __set($name, $value) 
       {
         $this->set($name, $value);
@@ -108,6 +117,9 @@ class template extends anObject
           {
             extract($this->vars);
           }
+
+	$tpl &= $this;
+
         if ($file != '') 
           {
             ob_start();
@@ -137,7 +149,9 @@ class template extends anObject
           $this->set('config', $config);
       }
 
-
+    public function __toString() {
+      return $this->parse();
+    }
     
   }
 ?>

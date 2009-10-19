@@ -206,6 +206,7 @@ class debug {
 		     'line' => $line,
 		     'exception' => $exception);
       self::log($error, 'ERROR');
+      throw $exception;
   }
 
   public static function allowed($type) {

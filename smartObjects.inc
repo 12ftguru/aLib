@@ -38,7 +38,7 @@ abstract class smartObject extends anObject {
       $this->db = $mydb;
     } else {
       global $db;
-      if (is_a($mydb, 'idb')) {
+      if (is_a($db, 'idb')) {
 	$this->db = $db;
       }
     }
@@ -86,15 +86,15 @@ abstract class smartObject extends anObject {
 	if ($name == 'id' && $this->idField != 'id') {
 	  return $this->vars[$this->idField];
 	} else if (in_array($name, $this->serializedKeys)) {
-	  D::log("$name is serialized, method is ".$this->serializeMethod);
+	  //	  D::log("$name is serialized, method is ".$this->serializeMethod);
 	  if ($this->serializeMethod == 'php') {
 	    $retval = unserialize($this->vars[$name]);
 	  } else {
 	    $retval = json_decode($this->vars[$name], TRUE);
 	  }
-	  D::log("Returning $name as");
+	  /*  D::log("Returning $name as");
 	  D::v($this->vars[$name]);
-	  D::v($retval);
+	  D::v($retval); */
 	  return $retval;
         } else if (($name == 'errno' || $name == 'error') && ! in_array($name, array_keys($this->vars))) {
           return $this->$name;
@@ -104,8 +104,10 @@ abstract class smartObject extends anObject {
 	  if (!is_a($this->foreignKeys[$name]['obj'], 'smartObject')) {
 	    $type = $this->foreignKeys[$name]['type'];
 	    $fKey = $this->foreignKeys[$name]['key'];
-	    $this->foreignKeys[$name]['obj'] = new $type($this->{$fKey});
+	    $this->foreignKeys[$name]['obj'] = new $type($this->{$fKey}, $this->db);
 	  }
+	  //	  D::log('Returning Foreign Key '.$fKey.' '.$type.' '.$name);
+	  // D::v($this->foreignKeys[$name]['obj']);
 	  return $this->foreignKeys[$name]['obj'];
 	}
       }

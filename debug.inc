@@ -63,6 +63,7 @@ class debug {
     global $config;
     ob_start();
     self::$instance = new self();
+    self::$config['debugLevel'] = 0;
     if (is_array($config->debugConfig)) {
       self::$config = $config->debugConfig;
     } 

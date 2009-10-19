@@ -16,6 +16,7 @@ abstract class smartObject extends anObject {
   protected $foreignKeys = array();
   protected $serializedKeys = array();
   protected $serializeMethod = 'json'; // json or php
+  protected $unserialized = array();
   /*
     protected $format = array(
       'string' => '', // a sprintf style format string
@@ -44,6 +45,9 @@ abstract class smartObject extends anObject {
     if (is_array($id)) {
       foreach ($id as $key => $val) {
 	$this->{$key} = $val;
+	if (in_array($key, $this->serializedKeys)) {
+	  $this->unserialized[$key] = FALSE;
+	}
       }
     } else if ($id) {
       $this->{$this->idField} = $id;
@@ -53,24 +57,22 @@ abstract class smartObject extends anObject {
 
     public function __set($name, $value) 
       {
-	D::log("Attempting to set $name", 'GETSET', "SmartObject Internals");
-	D::log("Value: ".serialize($value), 'GETSET', "SmartObject Internals");
+	D::log("Attempting to set $name");
+	D::v($value);
 	if ($name == 'id' && $this->idField != 'id') {
           $this->vars[$this->idField] = $value;
 	} else if (in_array($name, $this->serializedKeys)) {
-          if ($this->serializeMethod == 'php') {
-            $this->vars[$name] = serialize($value);
-          } else {
-            $this->vars[$name] = json_encode($value);
-          }
+	  D::log("$name is serialized.");
+            $this->vars[$name] = $value;
+	    $this->unserialized[$name] = TRUE;
         } else if (in_array($name, array_keys($this->foreignKeys))) {
           if (is_object($value) && ($value instanceof $this->foreignKeys[$name]['type'])) {
             $this->vars[$this->foreignKeys[$name]['key']] = $value->id;
             $this->foreignKeys[$name]['obj'] = $value;
           } else {
-	    D::log("Value was either not an object or not specifically a \"".$this->foreignKeys[$name]['type']."\" object.", "LOG", "SmartObject Internals");
-	    D::log("Value class: ".get_class($value)." -> ".get_parent_class($value), "LOG", "SmartObject Internals");
-	    D::v($value, "VARIABLE", "SmartObject Internals");
+	    D::log("Value was either not an object or not specifically a \"".$this->foreignKeys[$name]['type']."\" object.", "LOG");
+	    D::log("Value class: ".get_class($value)." -> ".get_parent_class($value), "LOG");
+	    D::v($value, "VARIABLE");
 	  }
 	} else {
 	  $this->vars[$name] = $value;
@@ -80,15 +82,20 @@ abstract class smartObject extends anObject {
 
   public function __get($name) 
       {
-	D::log("Attempting to get $name", 'GETSET', "SmartObject Internals");
+	D::log("Attempting to get $name");
 	if ($name == 'id' && $this->idField != 'id') {
 	  return $this->vars[$this->idField];
 	} else if (in_array($name, $this->serializedKeys)) {
-          if ($this->serializeMethod == 'php') {
-            return unserialize($this->vars[$name]);
-          } else {
-            return json_decode($this->vars[$name], TRUE);
-          }
+	  D::log("$name is serialized, method is ".$this->serializeMethod);
+	  if ($this->serializeMethod == 'php') {
+	    $retval = unserialize($this->vars[$name]);
+	  } else {
+	    $retval = json_decode($this->vars[$name], TRUE);
+	  }
+	  D::log("Returning $name as");
+	  D::v($this->vars[$name]);
+	  D::v($retval);
+	  return $retval;
         } else if (($name == 'errno' || $name == 'error') && ! in_array($name, array_keys($this->vars))) {
           return $this->$name;
 	} else if (!is_array($this->foreignKeys[$name])) {
@@ -136,7 +143,7 @@ abstract class smartObject extends anObject {
     if (is_a($this->db, 'idb')) {
       $sql = "select * from `".$this->table."` where `".$this->idField."` = '".$this->db->real_escape_string($this->vars[$this->idField])."'";
       $this->reset();
-      Debug::log('SmartObject Read SQL: '.$sql, "LOG", "SmartObject Internals");
+      Debug::log('SmartObject Read SQL: '.$sql, "LOG");
       $res = $this->db->query($sql);
       if (is_object($res)) {
         if ($res->num_rows == 1) {
@@ -170,11 +177,37 @@ abstract class smartObject extends anObject {
       $sql .= implode(',', $keys);
       $sql .= ") values (";
       foreach ($this->vars as $key => $val) {
+	  if (in_array($key, $this->serializedKeys)) {
+	    D::log('processing serialized var '.$key);
+	    D::v($val);
+	    D::v($this->unserialized[$key]);
+	    if (!$this->unserialized[$key] || (!is_array($val) && !is_object($val))) {
+	      if ($this->serializeMethod == 'php') {
+		$val = unserialize($val);
+	      } else {
+		$val = json_decode($val, TRUE);
+	      }
+	      D::log('Unserialized: ');
+	      D::v($val);
+	    }
+	    if ($this->serializeMethod == 'php') {
+	      $val = serialize($val);
+	    } else {
+	      $val = json_encode($val);
+	    }
+	    D::log('Serialized val: ');
+	    D::v($val);
+	    if ($val == "" || $val == '""' || $val == "null" || $val == '"null"') {
+	      $val = NULL;
+	    }
+	    D::log('Null Check: ');
+	    D::v($val);
+	  }
 	$sql .= "'".$this->db->real_escape_string($val)."', ";
       }
       $sql = substr($sql, 0, -2);
       $sql .= ")";
-      Debug::log("Smart Object attempting to insert: ".$sql, "LOG", "SmartObject Internals");
+      Debug::log("Smart Object attempting to insert: ".$sql);
       $this->db->query($sql);
       $this->errno = $this->db->errno;
       $this->error = $this->db->error;
@@ -192,6 +225,7 @@ abstract class smartObject extends anObject {
   }
 
   public function update() {
+    D::log("Updating.");
     if (is_a($this->db, 'idb')) {
       $sql = "update `".$this->table."` set ";
       foreach ($this->foreignKeys as $fkey => $farray) {
@@ -201,16 +235,44 @@ abstract class smartObject extends anObject {
       }
       foreach ($this->vars as $key => $val) {
         if ($key != $this->idField) {
-        $sql .= "`$key` = '".$this->db->real_escape_string($val)."', ";
+	  if (in_array($key, $this->serializedKeys)) {
+	    D::log('processing serialized var '.$key);
+	    D::v($val);
+	    D::v($this->unserialized[$key]);
+	    if (!$this->unserialized[$key] || (!is_array($val) && !is_object($val))) {
+	      if ($this->serializeMethod == 'php') {
+		$val = unserialize($val);
+	      } else {
+		$val = json_decode($val, TRUE);
+	      }
+	      D::log('Unserialized: ');
+	      D::v($val);
+	    }
+	    if ($this->serializeMethod == 'php') {
+	      $val = serialize($val);
+	    } else {
+	      $val = json_encode($val);
+	    }
+	    D::log('Serialized val: ');
+	    D::v($val);
+	    if ($val == "" || $val == '""' || $val == "null" || $val == '"null"') {
+	      $val = NULL;
+	    }
+	    D::log('Null Check: ');
+	    D::v($val);
+	  }
+	  $sql .= "`$key` = '".$this->db->real_escape_string($val)."', ";
         }
       }
       $sql = substr($sql, 0, -2);
       $sql .= " where `".$this->idField."` = '".$this->db->real_escape_string($this->vars[$this->idField])."'";
-      Debug::log("Smart Object attempting to update: ".$sql, "LOG", "SmartObject Internals");
+      D::log("Smart Object attempting to update: ".$sql);
       $this->db->query($sql);
+	D::warn('MySQL Error: '.$this->db->errno.' '.$this->db->error);
       if ($this->db->errno == 0) {
         return TRUE;
       } else {
+	D::warn('MySQL Error: '.$this->db->errno.' '.$this->db->error);
 	return FALSE;
       }
     }
@@ -220,7 +282,7 @@ abstract class smartObject extends anObject {
   public function delete() {
     if (is_a($this->db, 'idb')) {
       $sql = "delete from `".$this->table."` where `".$this->idField."` = '".$this->db->real_escape_string($this->vars[$this->idField])."' limit 1";
-      Debug::log('SmartObject Delete SQL: '.$sql, "LOG", "SmartObject Internals");
+      Debug::log('SmartObject Delete SQL: '.$sql);
       $res = $this->db->query($sql);
       $this->reset();
       if ($this->db->errno == 0) {
@@ -248,6 +310,9 @@ abstract class smartObject extends anObject {
     return $this->delete();
   }
 
+  public function setDB($db) {
+    $this->db = $db;
+  }
 
 }
 
@@ -255,6 +320,7 @@ abstract class smartObject extends anObject {
 class smartResult extends MySQLi_Result implements IteratorAggregate {
   public $resultType;
   public $resultParams;
+  public $link;
 
   public function getIterator()  
   {  
@@ -265,7 +331,11 @@ class smartResult extends MySQLi_Result implements IteratorAggregate {
     if (!$type) { $type = $this->resultType; }
     if (!$params) { $params = $this->resultParams; }
     if ($type) {
-      return $this->fetch_object($type, $params);
+      $obj =  $this->fetch_object($type, $params);
+      if ($this->link) {
+	$obj->setDB($this->link);
+      }
+      return $obj;
     } 
   }
 }
@@ -275,6 +345,7 @@ class smartResultIterator implements Iterator
   protected $result;  
   protected $position;  
   protected $currentRow;  
+  public $link;
   
   /** 
    * Constructor 
@@ -282,7 +353,8 @@ class smartResultIterator implements Iterator
    */  
   public function __construct($result)  
   {  
-    $this->result = $result;  
+    $result->link = $this->link;
+    $this->result = $result;
   }  
   
   /** 
@@ -420,7 +492,7 @@ class smartObjectFactory {
       $this->queryString .= " `".$method."` = '".$this->db->real_escape_string($args[0])."'";
       $this->numWheres++;
     }
-    Debug::log("Query Builder: ".$this->queryString, "LOG", "SmartObject Internals");
+    Debug::log("Query Builder: ".$this->queryString, "LOG");
     return self::$instance;
   }
 
@@ -438,7 +510,8 @@ class smartObjectFactory {
       $smartResult = new smartResult($db);
       $smartResult->resultType = $this->objType;
       $smartResult->resultParams = $this->objArgs;
-      Debug::variable($smartResult, "VARIABLE", "SmartObject Internals");
+      $smartResult->link = $db;
+      Debug::variable($smartResult, "VARIABLE");
       $this->reset();
       return $smartResult;
     } else {

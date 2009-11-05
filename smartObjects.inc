@@ -485,6 +485,19 @@ class smartObjectFactory {
       }
       $this->queryString .= " ".$args[0];
       $this->numWheres++;
+    } else if (strtolower($method) == "match") {
+      if (! stristr($this->queryString, ' where ')) {
+        $this->queryString .= " where";
+      } else if ($this->numWheres > 0) {
+        $this->queryString .= " and";
+      }
+      $this->queryString = " MATCH (".$args[0].") AGAINST ('".$args[1]."'";
+      if ($args[2]) {
+	$this->queryString = "IN BOOLEAN MODE)";
+      } else {
+	$this->queryString = ")";
+      }
+      $this->numWheres++;
     } else {
       if (! stristr($this->queryString, ' where ')) {
         $this->queryString .= " where";
@@ -529,4 +542,72 @@ class smartObjectFactory {
 }
 
 
+abstract class smartObjectWithTags extends smartObject {
+  public $updateTagCounts = TRUE; // TRUE/FALSE to update a tagCounts table.
+  /** Something like:
+     CREATE TABLE `tagCount` (
+     `tag` VARCHAR( 255 ) NOT NULL ,
+     `total` INT( 64 ) NOT NULL ,
+     PRIMARY KEY ( `tag` )
+     ) ENGINE = MYISAM ;
+  */
+
+
+  /**
+   * Add a tag or an array of tags to this object 
+   */
+
+  function addTag($tags) {
+    $array = explode(' | ', $this->tags);
+    if (!is_array($tags)) {
+      $tag = $tags;
+      $tags = array($tag);
+    }
+    foreach ($tags as $tag) {
+      $array[] = $tag;
+      if ($this->updateTagCounts) {
+	if (is_a($this->db, 'idb')) {
+	  $res = $db->query("insert into tagCounts set `tag` = '$tag', `total` = 1 on duplicate key update `total` = `total` + 1;");
+	}
+      }
+    }
+    $this->tags = implode(' | ', array_unique($array));
+  }
+
+  /**
+   * Remove a tag or an array of tags to this object 
+   */
+  function removeTag($tags) {
+    $array = explode(' | ', $this->tags);
+    if (!is_array($tags)) {
+      $tag = $tags;
+      $tags = array($tag);
+    }
+    foreach ($tags as $tag) {
+      $key = array_search( $tag, $array ); // Find key of given value
+      if ($key != NULL || $key !== FALSE) {
+	unset($array[$key]); // remove key from array
+	if ($this->updateTagCounts) {
+	  if (is_a($this->db, 'idb')) {
+	    $res = $db->query("update tagCounts set `total` = `total` - 1 where `tag` = '$tag'");
+	  }
+	}
+      }
+    }
+    $this->tags = implode(' | ', array_unique($array));
+  }
+
+  function clearTags() {
+    $array = explode(' | ', $this->tags);
+    $this->tags = '';
+    if (count($array) > 0 && $this->updateTagCounts) {
+      foreach ($array as $tag) {
+	  if (is_a($this->db, 'idb')) {
+	    $res = $db->query("update tagCounts set `total` = `total` - 1 where `tag` = '$tag'");
+	  }
+      }
+    }
+  }
+
+}
 ?>

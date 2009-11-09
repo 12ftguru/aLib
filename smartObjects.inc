@@ -545,7 +545,7 @@ class smartObjectFactory {
 abstract class smartObjectWithTags extends smartObject {
   public $updateTagCounts = TRUE; // TRUE/FALSE to update a tagCounts table.
   /** Something like:
-     CREATE TABLE `tagCount` (
+     CREATE TABLE `tagCounts` (
      `tag` VARCHAR( 255 ) NOT NULL ,
      `total` INT( 64 ) NOT NULL ,
      PRIMARY KEY ( `tag` )
@@ -558,7 +558,12 @@ abstract class smartObjectWithTags extends smartObject {
    */
 
   function addTag($tags) {
-    $array = explode(' | ', $this->tags);
+    if(preg_match('/[^\s]+/', $this->tags)) {
+    	$array = explode(' | ', $this->tags);
+    } else {
+     $array = array();
+    }
+    
     if (!is_array($tags)) {
       $tag = $tags;
       $tags = array($tag);
@@ -567,7 +572,7 @@ abstract class smartObjectWithTags extends smartObject {
       $array[] = $tag;
       if ($this->updateTagCounts) {
 	if (is_a($this->db, 'idb')) {
-	  $res = $db->query("insert into tagCounts set `tag` = '$tag', `total` = 1 on duplicate key update `total` = `total` + 1;");
+	  $res = $this->db->query("insert into tagCounts set `tag` = '$tag', `total` = 1 on duplicate key update `total` = `total` + 1;");
 	}
       }
     }
@@ -589,7 +594,7 @@ abstract class smartObjectWithTags extends smartObject {
 	unset($array[$key]); // remove key from array
 	if ($this->updateTagCounts) {
 	  if (is_a($this->db, 'idb')) {
-	    $res = $db->query("update tagCounts set `total` = `total` - 1 where `tag` = '$tag'");
+	    $res = $this->db->query("update tagCounts set `total` = `total` - 1 where `tag` = '$tag'");
 	  }
 	}
       }
@@ -603,7 +608,7 @@ abstract class smartObjectWithTags extends smartObject {
     if (count($array) > 0 && $this->updateTagCounts) {
       foreach ($array as $tag) {
 	  if (is_a($this->db, 'idb')) {
-	    $res = $db->query("update tagCounts set `total` = `total` - 1 where `tag` = '$tag'");
+	    $res = $this->db->query("update tagCounts set `total` = `total` - 1 where `tag` = '$tag'");
 	  }
       }
     }

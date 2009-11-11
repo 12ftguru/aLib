@@ -44,7 +44,7 @@
     <!-- PHP copy/paste analysis -->
     <target name="phpcpd">
         <echo msg="PHP Copy/Paste..." />
-        <exec command="${phpdir}/phpcpd --log-pmd=${builddir}/logs/pmd.xml ${ws}" escape="false" />
+        <exec command="${phpdir}/phpcpd --suffixes=inc,php --log-pmd=${builddir}/logs/pmd.xml ${ws}" escape="false" />
     </target>
 
     <!-- PHP dependency checker -->

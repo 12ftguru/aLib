@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
  <project name="aLib" basedir="." default="app">
     <property name="builddir" value="${ws}/build" />
+    <property name="report.dir" value="${builddir}/logs" />
+    <property name="test.report.dir" value="${builddir}/logs" />
+    <property name="coverage.report.dir" value="${builddir}/logs/coverage" />
 
     <target name="clean">
         <echo msg="Clean..." />
@@ -61,7 +64,29 @@
     <!-- Unit Tests & coverage analysis -->
 
 <target name="phpunit">
-  <phpunit printsummary="false" haltonfailure="false" codecoverage="true">
+<!-- Create the report directories -->
+<adhoc>
+    <![CDATA[
+        set_include_path(
+            '${zend.dir}/library' . PATH_SEPARATOR . get_include_path());
+        require_once "Zend/Loader.php";
+        Zend_Loader::registerAutoload();
+    ]]>
+</adhoc>
+    <mkdir dir="${report.dir}"/>
+    <mkdir dir="${coverage.report.dir}"/>
+    <mkdir dir="${test.report.dir}"/>
+    <!-- Create the coverage database -->
+    <coverage-setup database="${coverage.report.dir}/coverage.db">
+        <fileset dir="${app.dir}">
+            <include name="**/*.php"/>
+        </fileset>
+        <fileset dir="${lib.dir}">
+            <include name="**/*.php"/>
+        </fileset>
+    </coverage-setup>
+    <!-- Run the tests -->
+  <phpunit printsummary="false" haltonfailure="false" codecoverage="true" haltonerror="false">
     <formatter todir="build/logs" type="xml"/>
     <batchtest>
       <fileset dir=".">
@@ -70,6 +95,11 @@
       </fileset>
     </batchtest>
   </phpunit>
+   <!-- Create the unit test report -->
+    <coverage-report outfile="${coverage.report.dir}/clover.xml">
+        <report styledir="${phpunit.styles.dir}"
+      todir="${coverage.report.dir}"/>
+    </coverage-report>
  </target>
 
 

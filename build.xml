@@ -27,9 +27,10 @@
         <phpdoc title="API Documentation"
                 destdir="${builddir}/docs"
                 sourcecode="yes"
-                defaultpackagename="MHTest"
+                defaultpackagename="aLib"
                 output="HTML:frames/Extjs:default">
             <fileset dir="./">
+	      <exclude name="**/test/s" />
                 <include name="**/*.php" />
                 <include name="**/*.inc" />
                 <include name="**/*.ihtml" />

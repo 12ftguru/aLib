@@ -1,9 +1,6 @@
 <?php
 
 error_reporting(E_ALL ^ E_NOTICE);
-include_once(dirname(__FILE__).'/../alib.inc');
-addIncludePath(dirname(__FILE__).'/mockery/library', TRUE);
-addIncludePath(dirname(__FILE__).'/../');
 include_once('Mockery.php');
 include_once('Mockery/Framework.php');
 //include_once('idb.inc');
@@ -11,6 +8,10 @@ include_once('Mockery/Framework.php');
 /* Can't test an abstract class directly. */
 
 $db = Mockery::mock('idb');
+
+include_once(dirname(__FILE__).'/../alib.inc');
+addIncludePath(dirname(__FILE__).'/mockery/library', TRUE);
+addIncludePath(dirname(__FILE__).'/../');
 
 
 class testSmartObject extends smartObject {};

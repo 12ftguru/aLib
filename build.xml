@@ -30,7 +30,7 @@
                 defaultpackagename="aLib"
                 output="HTML:frames/Extjs:default">
             <fileset dir="./">
-	      <exclude name="**/test/s" />
+	      <exclude name="**/tests/" />
                 <include name="**/*.php" />
                 <include name="**/*.inc" />
                 <include name="**/*.ihtml" />

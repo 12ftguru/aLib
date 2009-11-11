@@ -1,6 +1,7 @@
 <?php
 
 error_reporting(E_ALL ^ E_NOTICE);
+require_once 'PHPUnit/Framework.php';
 include_once(dirname(__FILE__).'/mockery/library/Mockery.php');
 include_once(dirname(__FILE__).'/mockery/library/Mockery/Framework.php');
 //include_once('idb.inc');

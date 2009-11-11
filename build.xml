@@ -29,7 +29,7 @@
                 sourcecode="yes"
                 defaultpackagename="MHTest"
                 output="HTML:frames/Extjs:default">
-            <fileset dir="./app">
+            <fileset dir="./">
                 <include name="**/*.php" />
                 <include name="**/*.inc" />
                 <include name="**/*.ihtml" />

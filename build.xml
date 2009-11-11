@@ -52,7 +52,7 @@
     <!-- PHP CodeSniffer -->
     <target name="phpcs">
         <echo msg="PHP CodeSniffer..." />
-        <exec command="${phpdir}/phpcs --standard=anApp --report=checkstyle ${ws}/ > ${builddir}/logs/checkstyle.xml" escape="false" />
+        <exec command="${phpdir}/phpcs --standard=anApp --report=checkstyle ${ws}/ > ${builddir}/logs/checkstyle.xml --ignore=debug.*.inc,fb.php,Fire*,tests/*" escape="false" />
     </target>
 
     <!-- Unit Tests & coverage analysis -->

@@ -1,8 +1,8 @@
 <?php
 
 error_reporting(E_ALL ^ E_NOTICE);
-include_once('Mockery.php');
-include_once('Mockery/Framework.php');
+include_once(dirname(__FILE__).'/mockery/library/Mockery.php');
+include_once(dirname(__FILE__).'/mockery/library/Mockery/Framework.php');
 //include_once('idb.inc');
 
 /* Can't test an abstract class directly. */

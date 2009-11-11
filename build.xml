@@ -56,9 +56,21 @@
         <exec command="${phpdir}/phpcs --standard=anApp --ignore=*/debug.*.inc,*/fb.php,*/Fire*,*/tests/* --extensions=inc --report=checkstyle ${ws}/ > ${builddir}/logs/checkstyle.xml" escape="false" />
     </target>
 
+
+
     <!-- Unit Tests & coverage analysis -->
-    <target name="phpunit">
-        <echo msg="PHP Unit..." />
-        <exec command="${phpdir}/phpunit --log-junit ${builddir}/logs/phpunit.xml --log-pmd ${builddir}/logs/phpunit.pmd.xml --coverage-clover ${builddir}/logs/coverage/clover.xml --coverage-html ${builddir}/logs/coverage/ ${ws}/tests"/>
-    </target>
+
+<target name="phpunit">
+  <phpunit printsummary="false" haltonfailure="false" codecoverage="true">
+    <formatter todir="build/logs" type="xml"/>
+    <batchtest>
+      <fileset dir=".">
+	<exclude name="*/mockery"/>
+        <include name="*Test.php"/>
+      </fileset>
+    </batchtest>
+  </phpunit>
+ </target>
+
+
 </project>

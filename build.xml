@@ -40,24 +40,24 @@
     <!-- PHP copy/paste analysis -->
     <target name="phpcpd">
         <echo msg="PHP Copy/Paste..." />
-        <exec command="${phpdir}phpcpd --log-pmd=${builddir}/logs/pmd.xml source" escape="false" />
+        <exec command="${phpdir}/phpcpd --log-pmd=${builddir}/logs/pmd.xml source" escape="false" />
     </target>
 
     <!-- PHP dependency checker -->
     <target name="pdepend">
         <echo msg="PHP Depend..." />
-        <exec command="${phpdir}pdepend --jdepend-xml=${builddir}/logs/jdepend.xml ${ws}/source" escape="false" />
+        <exec command="${phpdir}/pdepend --jdepend-xml=${builddir}/logs/jdepend.xml ${ws}/source" escape="false" />
     </target>
 
     <!-- PHP CodeSniffer -->
     <target name="phpcs">
         <echo msg="PHP CodeSniffer..." />
-        <exec command="${phpdir}phpcs --standard=ZEND --report=checkstyle ${ws}/source > ${builddir}/logs/checkstyle.xml" escape="false" />
+        <exec command="${phpdir}/phpcs --standard=ZEND --report=checkstyle ${ws}/source > ${builddir}/logs/checkstyle.xml" escape="false" />
     </target>
 
     <!-- Unit Tests & coverage analysis -->
     <target name="phpunit">
         <echo msg="PHP Unit..." />
-        <exec command="${phpdir}phpunit --log-junit ${builddir}/logs/phpunit.xml --log-pmd ${builddir}/logs/phpunit.pmd.xml --coverage-clover ${builddir}/logs/coverage/clover.xml --coverage-html ${builddir}/logs/coverage/ ${ws}/source/tests"/>
+        <exec command="${phpdir}/phpunit --log-junit ${builddir}/logs/phpunit.xml --log-pmd ${builddir}/logs/phpunit.pmd.xml --coverage-clover ${builddir}/logs/coverage/clover.xml --coverage-html ${builddir}/logs/coverage/ ${ws}/source/tests"/>
     </target>
 </project>

@@ -1,7 +1,7 @@
 <?php
 
 error_reporting(E_ALL ^ E_NOTICE);
-include_once('../alib.inc');
+include_once(get_file_dir().'../alib.inc');
 addIncludePath('../');
 addIncludePath('mockery/library', TRUE);
 include_once('Mockery.php');
@@ -244,5 +244,16 @@ class smartObjectTest extends PHPUnit_Framework_TestCase
           'This test has not been implemented yet.'
         );
     }
+}
+
+
+function get_file_dir() {
+    global $argv;
+    $dir = dirname(getcwd() . '/' . $argv[0]);
+    $curDir = getcwd();
+    chdir($dir);
+    $dir = getcwd();
+    chdir($curDir);
+    return $dir;
 }
 ?>

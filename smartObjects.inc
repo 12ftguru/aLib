@@ -340,6 +340,11 @@ class smartResult extends MySQLi_Result implements IteratorAggregate {
       return $obj;
     } 
   }
+
+  public function __destruct() {
+    $this->free();
+  }
+
 }
 
 class smartResultIterator implements Iterator  
@@ -425,7 +430,8 @@ class smartObjectFactory {
   private static $instance = NULL;
   private $objType = NULL;
   private $objArgs = NULL;
-  private $queryString = "";
+  public $queryString = "";
+  public $error = "";
   private $db;
   private $numWheres = 0;
 
@@ -437,6 +443,7 @@ class smartObjectFactory {
     if (!self::$instance) {
       self::$instance = new smartObjectFactory($db);
     }
+    self::$instance->reset();
     return self::$instance;
   }
 
@@ -449,6 +456,7 @@ class smartObjectFactory {
         $this->objType = $method;
         $this->objArgs = $args;
         $this->queryString = "select * from `".$tmp->table."`";
+	$this->numWheres = 0;
       }
     } else if (strtolower($method) == "where") {
       $this->queryString .= " where ".$args[0];
@@ -465,7 +473,7 @@ class smartObjectFactory {
     } else if (strtolower($method) == "orderby") {
       $this->queryString .= " order by ";
       if (is_array($args)) {
-        $this->queryString .= implode(', ',$args);
+        $this->queryString .= implode(' ',$args);
       } else {
         $this->queryString .= $args;
       }
@@ -512,6 +520,7 @@ class smartObjectFactory {
   }
 
   public function reset() {
+    $this->error = "";
     $this->queryString = "";
     $this->numWheres = 0;
   }
@@ -526,10 +535,15 @@ class smartObjectFactory {
       $smartResult->resultType = $this->objType;
       $smartResult->resultParams = $this->objArgs;
       $smartResult->link = $db;
-      Debug::variable($smartResult, "VARIABLE");
-      $this->reset();
+      $this->error = "";
+    $this->queryString = "";
+    $this->numWheres = 0;
       return $smartResult;
     } else {
+      $this->error = $db->error;
+      $this->errorQuery = $queryString;
+    $this->queryString = "";
+    $this->numWheres = 0;
       return FALSE;
       // A real programmer would add exceptions here.
     }

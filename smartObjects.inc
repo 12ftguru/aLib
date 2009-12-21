@@ -334,8 +334,8 @@ class smartResult extends MySQLi_Result implements IteratorAggregate {
     if (!$params) { $params = $this->resultParams; }
     if ($type) {
       $obj =  $this->fetch_object($type, $params);
-      if ($this->link) {
-	$obj->setDB($this->link);
+      if ($this->link && $this->link instanceof idb) {
+        //	$obj->setDB($this->link);
       }
       return $obj;
     } 
@@ -439,9 +439,9 @@ class smartObjectFactory {
     if (!$db) { $this->db = $GLOBALS['db']; };
   }
 
-  public function getInstance($db = NULL) {
+  public function getInstance() {
     if (!self::$instance) {
-      self::$instance = new smartObjectFactory($db);
+      self::$instance = new smartObjectFactory();
     }
     self::$instance->reset();
     return self::$instance;
@@ -536,8 +536,8 @@ class smartObjectFactory {
       $smartResult->resultParams = $this->objArgs;
       $smartResult->link = $db;
       $this->error = "";
-    $this->queryString = "";
-    $this->numWheres = 0;
+      $this->queryString = "";
+      $this->numWheres = 0;
       return $smartResult;
     } else {
       $this->error = $db->error;

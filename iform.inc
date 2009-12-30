@@ -156,6 +156,22 @@ class iForm extends anObject
           }
         $this->size = count($this->iFormVars);
       }
+
+    /**
+     * Add an arbitrary array to the form object.
+     *
+     * @return none
+     */
+    
+    function addArray($myArray) 
+      {
+        foreach($myArray as $name => $value) 
+          {
+            $this->iFormVars[$name] = new iFormVar($value);
+          }
+        $this->size = count($this->iFormVars);
+      }
+
     /**
      * Add many filters to the form.
      *

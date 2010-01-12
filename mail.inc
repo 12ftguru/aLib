@@ -29,6 +29,7 @@ class mail extends anObject
     private $_parts = array();
     private $_headers = array();
     private $_body;
+    public $isHTML = FALSE;
     /**
      * Constructor.
      * @param string $from [optional] email address from
@@ -175,13 +176,30 @@ class mail extends anObject
             $this->Content_Type = "multipart/mixed; boundary = $boundary";
             $text = "This is a MIME encoded message.\n\n--$boundary\n";
             // First fake up our body as a text attachment:
+            if ($this->isHTML) {
             $body = array(
-                "ctype" => "text/plain",
+              "ctype" => "text/html",
                 "attachment" => $this->body,
                 "name" => ""
             );
             $text.= $this->_buildMultipart($body);
             $text.= "--$boundary\n";
+            $body = array(
+              "ctype" => "text/plain",
+              "attachment" => strip_tags($this->body),
+              "name" => ""
+            );
+            $text.= $this->_buildMultipart($body);
+            $text.= "--$boundary\n";
+            } else {
+            $body = array(
+              "ctype" => "text/plain",
+                "attachment" => $this->body,
+                "name" => ""
+            );
+            $text.= $this->_buildMultipart($body);
+            $text.= "--$boundary\n";
+            }
             // Now we process attachments.
             foreach($this->_parts as $part) 
               {

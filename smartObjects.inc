@@ -13,6 +13,7 @@ abstract class smartObject extends anObject {
   public $error;
   public $errno;
   public $insertID;
+  public $sql;
   protected $foreignKeys = array();
   protected $serializedKeys = array();
   protected $serializeMethod = 'json'; // json or php
@@ -57,6 +58,10 @@ abstract class smartObject extends anObject {
 
     public function __set($name, $value) 
       {
+        if ($name == "sql") {
+          $this->sql = $value;
+          return;
+        }
 	D::log("Attempting to set $name");
 	D::v($value);
 	if ($name == 'id' && $this->idField != 'id') {
@@ -146,6 +151,7 @@ abstract class smartObject extends anObject {
       $sql = "select * from `".$this->table."` where `".$this->idField."` = '".$this->db->real_escape_string($this->vars[$this->idField])."'";
       $this->reset();
       Debug::log('SmartObject Read SQL: '.$sql, "LOG");
+      $this->sql = $sql;
       $res = $this->db->query($sql);
       if (is_object($res)) {
         if ($res->num_rows == 1) {
@@ -210,6 +216,7 @@ abstract class smartObject extends anObject {
       $sql = substr($sql, 0, -2);
       $sql .= ")";
       Debug::log("Smart Object attempting to insert: ".$sql);
+      $this->sql = $sql;
       $this->db->query($sql);
       $this->errno = $this->db->errno;
       $this->error = $this->db->error;
@@ -269,6 +276,7 @@ abstract class smartObject extends anObject {
       $sql = substr($sql, 0, -2);
       $sql .= " where `".$this->idField."` = '".$this->db->real_escape_string($this->vars[$this->idField])."'";
       D::log("Smart Object attempting to update: ".$sql);
+      $this->sql = $sql;
       $this->db->query($sql);
 	D::warn('MySQL Error: '.$this->db->errno.' '.$this->db->error);
       if ($this->db->errno == 0) {

@@ -177,6 +177,9 @@ class mail extends anObject
             $text = "This is a MIME encoded message.\n\n--$boundary\n";
             // First fake up our body as a text attachment:
             if ($this->isHTML) {
+              if (!preg_match('/<html/',$this->body)) {
+                $this->body = '<html><head></head><body>'.$this->body.'</body></html>';
+              }
             $body = array(
               "ctype" => "text/html",
                 "attachment" => $this->body,

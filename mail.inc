@@ -177,25 +177,27 @@ class mail extends anObject
             $text = "This is a MIME encoded message.\n\n--$boundary\n";
             // First fake up our body as a text attachment:
             if ($this->isHTML) {
-              $this->Content_Type = "multipart/alternative; boundary = $boundary";
-
+              $boundary2 = "b" . md5(uniqid(time()));
+              $ishtml = 'Content-Type: multipart/alternative; boundary='.$boundary2."\n";
               if (!preg_match('/<html/',$this->body)) {
                 $this->body = '<html><head></head><body>'.$this->body.'</body></html>';
               }
-            $body = array(
-              "ctype" => "text/html",
+              $body = array(
+                "ctype" => "text/html",
                 "attachment" => $this->body,
                 "name" => ""
-            );
-            $text.= $this->_buildMultipart($body);
-            $text.= "--$boundary\n";
+              );
+            $ishtml .= $this->_buildMultipart($body);
+            $ishtml .= "--$boundary2\n";
             $body = array(
               "ctype" => "text/plain",
               "attachment" => strip_tags($this->body),
               "name" => ""
             );
-            $text.= $this->_buildMultipart($body);
-            $text.= "--$boundary\n";
+            $ishtml .= $this->_buildMultipart($body);
+            $ishtml .= "--$boundary2\n";
+            $text .= $ishtml;
+            $text .= "--$boundary\n";
             } else {
             $body = array(
               "ctype" => "text/plain",

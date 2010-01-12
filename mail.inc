@@ -212,6 +212,9 @@ class mail extends anObject
         else
           {
             // Plain text message.
+            if ($this->isHTML) {
+              $this->Content_Type = 'text/html';
+            }
             $text = $this->_body;
             $text = wordwrap($text, 70);
             return $text;

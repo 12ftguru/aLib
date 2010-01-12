@@ -180,6 +180,7 @@ class mail extends anObject
               $boundary2 = "b" . md5(uniqid(time()));
               $ishtml = '';
               $ishtmlheader = $text.'Content-Type: multipart/alternative; boundary='.$boundary2."\n";
+              $ishtmlheader = "Content-Transfer-Encoding: 7bit\n\n";
               $text = '';
               $ishtml .= "--".$boundary2."\n";
               if (!preg_match('/<html/',$this->body)) {

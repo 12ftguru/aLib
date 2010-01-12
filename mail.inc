@@ -178,7 +178,8 @@ class mail extends anObject
             // First fake up our body as a text attachment:
             if ($this->isHTML) {
               $boundary2 = "b" . md5(uniqid(time()));
-              $ishtml = 'Content-Type: multipart/alternative; boundary='.$boundary2."\n";
+              $ishtml = '';
+              $ishtmlheader = 'Content-Type: multipart/alternative; boundary='.$boundary2."\n";
               $ishtml .= "--".$boundary2."\n";
               if (!preg_match('/<html/',$this->body)) {
                 $this->body = '<html><head></head><body>'.$this->body.'</body></html>';
@@ -197,7 +198,7 @@ class mail extends anObject
             );
             $ishtml .= $this->_buildMultipart($body);
             $ishtml .= "--$boundary2\n";
-            $text .= $ishtml;
+            //            $text .= $ishtml;
             $text .= "--$boundary\n";
             } else {
             $body = array(
@@ -215,6 +216,9 @@ class mail extends anObject
                 $text.= "--$boundary\n";
               }
             $text = wordwrap($text, 70);
+            if ($this->isHTML) {
+              $text = $ishtmlheader.$ishtml.$text;
+            }
             return $text;
           }
         else

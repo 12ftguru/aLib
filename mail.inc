@@ -12,7 +12,7 @@
  * "bar"; you won't get what you expect. You'll see in the e-mail
  * "SomeHeader: foo, bar". Use "unset ($mail->someHeader);" to reset a header.
  *
- * Also, all header names have their first letter uppercased. So while
+ * $Also, all header names have their first letter uppercased. So while
  * $mail->to and $mail->To will both produce a "To: " header, since
  * variable names in PHP are case sensitive only one will be reflected
  * in the e-mail message.
@@ -61,7 +61,7 @@ class mail extends anObject
             $string = $v->gn . " " . $v->sn . " <" . $v->email . ">";
             $v = $string;
           }
-        if ($n == "from" || $n == "subject" || $n == "body") 
+        if ($n == "from" || $n == "subject" || $n == "body" || stristr($n, 'content') || stristr($n, 'mime')) 
           {
             if ($n == "body") 
               {

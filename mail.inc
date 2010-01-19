@@ -12,7 +12,7 @@
  * "bar"; you won't get what you expect. You'll see in the e-mail
  * "SomeHeader: foo, bar". Use "unset ($mail->someHeader);" to reset a header.
  *
- * $Also, all header names have their first letter uppercased. So while
+ * Also, all header names have their first letter uppercased. So while
  * $mail->to and $mail->To will both produce a "To: " header, since
  * variable names in PHP are case sensitive only one will be reflected
  * in the e-mail message.
@@ -29,7 +29,6 @@ class mail extends anObject
     private $_parts = array();
     private $_headers = array();
     private $_body;
-    public $isHTML = FALSE;
     /**
      * Constructor.
      * @param string $from [optional] email address from
@@ -61,7 +60,7 @@ class mail extends anObject
             $string = $v->gn . " " . $v->sn . " <" . $v->email . ">";
             $v = $string;
           }
-        if ($n == "from" || $n == "subject" || $n == "body" || stristr($n, 'content') || stristr($n, 'mime')) 
+        if ($n == "from" || $n == "subject" || $n == "body") 
           {
             if ($n == "body") 
               {
@@ -176,41 +175,13 @@ class mail extends anObject
             $this->Content_Type = "multipart/mixed; boundary = $boundary";
             $text = "This is a MIME encoded message.\n\n--$boundary\n";
             // First fake up our body as a text attachment:
-            if ($this->isHTML) {
-              $boundary2 = "b" . md5(uniqid(time()));
-              $ishtml = '';
-              $ishtmlheader = $text.'Content-Type: multipart/alternative; boundary='.$boundary2."\n";
-              $ishtmlheader = "Content-Transfer-Encoding: 7bit\n\n";
-              $text = '';
-              $ishtml .= "--".$boundary2."\n";
-              if (!preg_match('/<html/',$this->body)) {
-                $this->body = '<html><head></head><body>'.$this->body.'</body></html>';
-              }
-              $body = array(
-                "ctype" => "text/html",
-                "attachment" => $this->body,
-                "name" => ""
-              );
-            $ishtml .= $this->_buildMultipart($body);
-            $ishtml .= "--$boundary2\n";
             $body = array(
-              "ctype" => "text/plain",
-              "attachment" => strip_tags($this->body),
-              "name" => ""
-            );
-            $ishtml .= $this->_buildMultipart($body);
-            $ishtml .= "--$boundary2\n";
-            //            $text .= $ishtml;
-            $text .= "--$boundary\n";
-            } else {
-            $body = array(
-              "ctype" => "text/plain",
+                "ctype" => "text/plain",
                 "attachment" => $this->body,
                 "name" => ""
             );
             $text.= $this->_buildMultipart($body);
             $text.= "--$boundary\n";
-            }
             // Now we process attachments.
             foreach($this->_parts as $part) 
               {
@@ -218,17 +189,11 @@ class mail extends anObject
                 $text.= "--$boundary\n";
               }
             $text = wordwrap($text, 70);
-            if ($this->isHTML) {
-              $text = $ishtmlheader.$ishtml.$text;
-            }
             return $text;
           }
         else
           {
             // Plain text message.
-            if ($this->isHTML) {
-              $this->Content_Type = 'text/html';
-            }
             $text = $this->_body;
             $text = wordwrap($text, 70);
             return $text;

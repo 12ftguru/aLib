@@ -13,6 +13,7 @@ abstract class smartObject extends anObject {
   public $error;
   public $errno;
   public $insertID;
+  public $sql;
   protected $foreignKeys = array();
   protected $serializedKeys = array();
   protected $serializeMethod = 'json'; // json or php
@@ -57,6 +58,10 @@ abstract class smartObject extends anObject {
 
     public function __set($name, $value) 
       {
+        if ($name == "sql") {
+          $this->sql = $value;
+          return;
+        }
 	D::log("Attempting to set $name");
 	D::v($value);
 	if ($name == 'id' && $this->idField != 'id') {
@@ -146,6 +151,7 @@ abstract class smartObject extends anObject {
       $sql = "select * from `".$this->table."` where `".$this->idField."` = '".$this->db->real_escape_string($this->vars[$this->idField])."'";
       $this->reset();
       Debug::log('SmartObject Read SQL: '.$sql, "LOG");
+      $this->sql = $sql;
       $res = $this->db->query($sql);
       if (is_object($res)) {
         if ($res->num_rows == 1) {
@@ -210,6 +216,7 @@ abstract class smartObject extends anObject {
       $sql = substr($sql, 0, -2);
       $sql .= ")";
       Debug::log("Smart Object attempting to insert: ".$sql);
+      $this->sql = $sql;
       $this->db->query($sql);
       $this->errno = $this->db->errno;
       $this->error = $this->db->error;
@@ -269,6 +276,7 @@ abstract class smartObject extends anObject {
       $sql = substr($sql, 0, -2);
       $sql .= " where `".$this->idField."` = '".$this->db->real_escape_string($this->vars[$this->idField])."'";
       D::log("Smart Object attempting to update: ".$sql);
+      $this->sql = $sql;
       $this->db->query($sql);
 	D::warn('MySQL Error: '.$this->db->errno.' '.$this->db->error);
       if ($this->db->errno == 0) {
@@ -334,12 +342,17 @@ class smartResult extends MySQLi_Result implements IteratorAggregate {
     if (!$params) { $params = $this->resultParams; }
     if ($type) {
       $obj =  $this->fetch_object($type, $params);
-      if ($this->link) {
-	$obj->setDB($this->link);
+      if ($this->link && $this->link instanceof idb) {
+        //	$obj->setDB($this->link);
       }
       return $obj;
     } 
   }
+
+  public function __destruct() {
+    $this->free();
+  }
+
 }
 
 class smartResultIterator implements Iterator  
@@ -425,7 +438,8 @@ class smartObjectFactory {
   private static $instance = NULL;
   private $objType = NULL;
   private $objArgs = NULL;
-  private $queryString = "";
+  public $queryString = "";
+  public $error = "";
   private $db;
   private $numWheres = 0;
 
@@ -433,10 +447,11 @@ class smartObjectFactory {
     if (!$db) { $this->db = $GLOBALS['db']; };
   }
 
-  public function getInstance($db = NULL) {
+  public function getInstance() {
     if (!self::$instance) {
-      self::$instance = new smartObjectFactory($db);
+      self::$instance = new smartObjectFactory();
     }
+    self::$instance->reset();
     return self::$instance;
   }
 
@@ -449,6 +464,7 @@ class smartObjectFactory {
         $this->objType = $method;
         $this->objArgs = $args;
         $this->queryString = "select * from `".$tmp->table."`";
+	$this->numWheres = 0;
       }
     } else if (strtolower($method) == "where") {
       $this->queryString .= " where ".$args[0];
@@ -465,7 +481,7 @@ class smartObjectFactory {
     } else if (strtolower($method) == "orderby") {
       $this->queryString .= " order by ";
       if (is_array($args)) {
-        $this->queryString .= implode(', ',$args);
+        $this->queryString .= implode(' ',$args);
       } else {
         $this->queryString .= $args;
       }
@@ -512,6 +528,7 @@ class smartObjectFactory {
   }
 
   public function reset() {
+    $this->error = "";
     $this->queryString = "";
     $this->numWheres = 0;
   }
@@ -526,10 +543,15 @@ class smartObjectFactory {
       $smartResult->resultType = $this->objType;
       $smartResult->resultParams = $this->objArgs;
       $smartResult->link = $db;
-      Debug::variable($smartResult, "VARIABLE");
-      $this->reset();
+      $this->error = "";
+      $this->queryString = "";
+      $this->numWheres = 0;
       return $smartResult;
     } else {
+      $this->error = $db->error;
+      $this->errorQuery = $queryString;
+    $this->queryString = "";
+    $this->numWheres = 0;
       return FALSE;
       // A real programmer would add exceptions here.
     }

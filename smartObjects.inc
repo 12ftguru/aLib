@@ -507,11 +507,11 @@ class smartObjectFactory {
       } else if ($this->numWheres > 0) {
         $this->queryString .= " and";
       }
-      $this->queryString = " MATCH (".$args[0].") AGAINST ('".$args[1]."'";
+      $this->queryString .= " MATCH (".$args[0].") AGAINST ('".$args[1]."'";
       if ($args[2]) {
-	$this->queryString = "IN BOOLEAN MODE)";
+	$this->queryString .= "IN BOOLEAN MODE)";
       } else {
-	$this->queryString = ")";
+	$this->queryString .= ")";
       }
       $this->numWheres++;
     } else {

@@ -159,6 +159,7 @@ abstract class smartObject extends anObject {
           foreach ($row as $key => $val) {
             $this->vars[$key] = $val;
           }
+          $this->errno = FALSE;
           return TRUE;
         } else {
           $this->errno = TRUE;

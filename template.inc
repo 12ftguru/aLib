@@ -118,7 +118,7 @@ class template extends anObject
             extract($this->vars);
           }
 
-	$tpl &= $this;
+	//$tpl &= $this;
 
         if ($file != '') 
           {

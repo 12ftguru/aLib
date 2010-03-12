@@ -1,5 +1,7 @@
 <?
 
+include_once(__DIR__.'/inflect.inc');
+
 /**
  * Smart Objects
  *
@@ -33,7 +35,7 @@ abstract class smartObject extends anObject {
       $this->idField = get_class($this)."ID";
     }
     if ($this->table === FALSE) {
-      $this->table = strtolower(get_class($this))."s";
+      $this->table = Inflect::pluralize(strtolower(get_class($this)));
     }
     if (is_a($mydb, 'idb')) {
       $this->db = $mydb;

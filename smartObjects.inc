@@ -559,6 +559,19 @@ class smartObjectFactory {
       // A real programmer would add exceptions here.
     }
   }
+  
+  public function count($query = NULL, $db = NULL) {
+    if (!$db) { $db = $GLOBALS['db']; };
+    if (!$query && $this->queryString != "") {
+      $query = preg_replace('/select \*/', 'select count(*) as total', $this->queryString);
+    }
+    if ($res = $db->query($query)) {
+      $row = $res->fetch_assoc();
+      return $row['total'];
+    } else {
+      return FALSE;
+    }
+  }
 
   public function f($query = NULL, $db = NULL) {
    return $this->query($query, $db);
